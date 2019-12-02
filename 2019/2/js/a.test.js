@@ -48,10 +48,34 @@ describe('should solve given examples', () => {
 
 
 it('Should calculate based on input file', () => {
-  console.log("Stop here!");
   const input = file.split(',').map(s => Number.parseInt(s));
   const result = a.process(input);
-  console.log(result);
   console.log("Answer: ", ""+result[0]);
   expect(1).toBe(1);
+})
+
+it('solve b', () => {
+
+  const input = file.split(',').map(s => Number.parseInt(s));
+  let solved = false;
+  let result = [];
+  for(let noun = 0; noun < 100; noun++){
+    input[1] = noun;
+    for(let verb = 0; verb < 100; verb++){
+      input[2] = verb;
+      result = a.process(input);
+      if(result[0] == 19690720){
+        solved = true;
+        break;
+      }
+    }
+    if(solved){
+      break;
+    }
+  }
+  const obj = {noun:input[1], verb:input[2]};
+  console.log(obj)
+  console.log("Answer:", 100 * obj.noun + obj.verb);
+  expect(result[0]).toBe(19690720);
+
 })
