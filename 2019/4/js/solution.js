@@ -18,6 +18,17 @@ const hasRepetition = a => {
 	}
 	return false;
 };
+const hasRepetitionNoLargeSets = a => {
+	const chars = (""+a).split('');
+	let obj = {};
+	for(c of chars){
+		if(!obj.hasOwnProperty(c)) obj[c] = 0;
+
+		obj[c] = obj[c] += 1;
+	}
+	const values = Object.entries(obj).map(a => a[1]).filter(n => n===2);
+	return values.length > 0;
+};
 const decresingSequence = a => {
 	const numbers = (""+a).split('').map(c => Number.parseInt(c));
 	if(new Set(numbers).length === 1) return false;
@@ -42,7 +53,14 @@ function verify(number){
 	return true;
 }
 
-function generate(start, end){
+function verifyWithLimits(number){
+	if((""+number).length !== 6) return false;
+	if(decresingSequence(number)) return false;
+	if(!hasRepetitionNoLargeSets(number)) return false;
+	return true;
+}
+
+function generate(start, end, verify){
 	let ans = [];
 	for(let i=start; i<=end; i++){
 		if(verify(i)){
@@ -52,14 +70,21 @@ function generate(start, end){
 	return ans;
 }
 
-function solve(input){
+function anyGroup(input){
 	const range = inputToRange(input);
-	return generate(range.start, range.end);
+	return generate(range.start, range.end, verify);
+}
+
+function groupLimits(input){
+	const range = inputToRange(input);
+	return generate(range.start, range.end, verifyWithLimits);
 }
 
 module.exports = {
 	verify: verify
-	, solve: solve
+	, verifyWithLimits: verifyWithLimits
+	, anyGroup: anyGroup
+	, groupLimits: groupLimits
 	, hasRepetition: hasRepetition
 	,decresingSequence: decresingSequence
 }
