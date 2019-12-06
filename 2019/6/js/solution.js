@@ -1,19 +1,11 @@
+const splitObjects = a => a.trim().split(")").map(s => s.trim()).filter(s => s !== "")
 const objectify = a => {const o = {}; o[a[1]] = a[0]; return o;}
-const removeUndefined = a => {
-	delete a[undefined]
-	return a
-}
-const splitObjects = a => a.trim().split(")")
-const combine = (a,b) => {return {...a, ...b}}
 const reduceObjArr = a => a.reduce((acc, curr) => combine(acc,curr), {})
-const difference = (a,b) => {bSet = new Set(b);return a.filter(x => !bSet.has(x));}
+const combine = (a,b) => {return {...a, ...b}}
+const difference = (a,b) => {bSet = new Set(b); return a.filter(x => !bSet.has(x));}
 const symmetricDifference = (a,b) => difference(a,b).concat(difference(b,a))
 
-const mapArr = arr => reduceObjArr(arr.map(a => splitObjects(a))
-	                                  .filter(a => a != undefined)
-	                                  .map(a => objectify(a))
-	                                  .map(a => removeUndefined(a))
-	                              )
+const mapArr = arr => reduceObjArr(arr.map(a => splitObjects(a)).map(a => objectify(a)))
 
 function path(obj, key, p){
 	const v = obj[key]
@@ -26,10 +18,8 @@ function countPaths(obj){
 	let paths = []
 	for(k in obj){
 		if(!obj.hasOwnProperty(k)) continue
-
 		const p = path(obj, k, [])
 		paths = paths.concat(p)
-
 	}
 	return paths.length
 }
