@@ -123,7 +123,7 @@ describe('Solve given examples, A', () => {
 	})
 })
 
-it.only('Solve A', () => {
+it('Solve A', () => {
 	const input = file
 	const result = app.solveA(input)
 	console.log(result)
@@ -150,4 +150,11 @@ describe('Solve given examples, B', () => {
 		const result = app.solveB(input, "YOU", "SAN")
 		expect(result).toBe(expected)
 	})
+})
+
+it('Solve B', () => {
+	const input = file
+	const result = app.solveB(input, "YOU", "SAN")
+	console.log(result)
+	expect(result).toBe(367)
 })
