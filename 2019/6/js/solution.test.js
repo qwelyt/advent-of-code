@@ -129,3 +129,25 @@ it.only('Solve A', () => {
 	console.log(result)
 	expect(result).toBe(162439)
 })
+
+describe('Solve given examples, B', () => {
+	it('1', () => {
+		const input = ""+
+			"COM)B"+
+			"\nB)C"+
+			"\nC)D"+
+			"\nD)E"+
+			"\nE)F"+
+			"\nB)G"+
+			"\nG)H"+
+			"\nD)I"+
+			"\nE)J"+
+			"\nJ)K"+
+			"\nK)L"+
+			"\nK)YOU"+
+			"\nI)SAN"
+		const expected = 4
+		const result = app.solveB(input, "YOU", "SAN")
+		expect(result).toBe(expected)
+	})
+})
