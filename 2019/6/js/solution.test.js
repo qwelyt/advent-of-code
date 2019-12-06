@@ -53,7 +53,7 @@ describe('Solve basics', () => {
 		const result = app.solveA(input)
 		expect(result).toBe(expected)
 	})
-	it.only('7', () => {
+	it('7', () => {
 		const input = "" +
 			"A)S14" +
 			"\nA)27C" +
@@ -68,6 +68,50 @@ describe('Solve basics', () => {
 		const result = app.solveA(input)
 		expect(result).toBe(expected)
 	})
+	it('8', () => {
+		const input = "" +
+			"A)B" +
+			"\nB)C" +
+			"\nC)D" +
+			"\nD)E" +
+			"\nE)F" +
+			"\nB)G" +
+			"\nG)H" +
+			"\nD)I" +
+			"\nE)J" +
+			"\nJ)K" +
+			"\nK)L" +
+			"\nD)M" +
+			"\nD)N" +
+			"\nN)O" +
+			"\nJ)P" +
+			"\nJ)Q"
+		const expected = 67
+		const result = app.solveA(input)
+		expect(result).toBe(expected)
+	})
+	it('9', () => {
+		const input = "" +
+			"A)B" +
+			"\nAA)BB" +
+			"\nB)C" +
+			"\nB)D" +
+			"\nB)E" +
+			"\nE)F" +
+			"\nF)G" +
+			"\nC)H" +
+			"\nC)J" +
+			"\nAA)CC" +
+			"\nCC)DD" +
+			"\nCC)EE" +
+			"\nDD)FF" +
+			"\nFF)GG" +
+			"\nEE)HH" +
+			"\nEE)LL"
+		const expected = 39
+		const result = app.solveA(input)
+		expect(result).toBe(expected)
+	})
 })
 
 describe('Solve given examples, A', () => {
@@ -79,8 +123,9 @@ describe('Solve given examples, A', () => {
 	})
 })
 
-it('Solve A', () => {
+it.only('Solve A', () => {
 	const input = file
 	const result = app.solveA(input)
 	console.log(result)
+	expect(result).toBe(162439)
 })
