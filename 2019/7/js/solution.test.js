@@ -25,17 +25,33 @@ describe('solve given examples, A', () => {
   })
 })
 
-// it.only('Oddly high', () => {
-//     const codes = file
-//     const phaseSettings = [3,0,0,0,0]
-//     const result = app.run(codes, phaseSettings)
-//     const expected = 0
-//     expect(result).toBe(expected)
-// })
-
-it.only('solve A', () => {
+it('solve A', () => {
     const codes = file
     const result = app.solveA(codes)
-    const expected = 0
+    const expected = 67023
+    expect(result).toBe(expected)
+})
+
+describe('solve given examples, B', () => {
+  it('1', () => {
+    const codes = "3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5"
+    const phaseSettings = [9,8,7,6,5]
+    const expected = 139629729
+    const result = app.runContinious(codes, phaseSettings)
+    expect(result).toBe(expected)
+  })
+  it('2', () => {
+    const codes = "3,52,1001,52,-5,52,3,53,1,52,56,54,1007,54,5,55,1005,55,26,1001,54,-5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10"
+    const phaseSettings = [9,7,8,5,6]
+    const expected = 18216
+    const result = app.runContinious(codes, phaseSettings)
+    expect(result).toBe(expected)
+  })
+})
+
+it('solve B', () => {
+    const codes = file
+    const result = app.solveB(codes)
+    const expected = 7818398
     expect(result).toBe(expected)
 })
