@@ -22,21 +22,16 @@ const read = (arr, position) => {
 	return val
 }
 
-
-const writeRequireInput = (input, arr, position) => {
-	return input
-}
-
 const write = (arr, position) => {
-	return writeRequireInput(inputValues[inputIndex++], arr, position)
+  const w = inputValues[inputIndex++]
+  if(w == undefined || null) return inputValues[inputValues.length-1]
+	return w
 }
-
 
 function parseInstruction(instruction){
 	const ins = (""+instruction).padStart(5, '0')
 	const opCode = ins.substring(ins.length-2)
 	const params = ins.substring(0, ins.length-2)
-
 
 	let ret = {
 		opCode: opCode
@@ -93,9 +88,14 @@ function parseInstruction(instruction){
 	return ret
 }
 
-function execute(codes){
-	let arr = codes.split(",").map(s => Number.parseInt(s))
-	for(let i=0; i<arr.length;){
+function arrifyCodes(codes){
+  if(typeof codes === "string") return codes.split(",").map(s => Number.parseInt(s))
+  if(codes.constructor == Array) return codes
+}
+
+function execute(codes, pauseAt4, pointer){
+  let arr = arrifyCodes(codes)
+	for(let i=pointer; i<arr.length;){
 		if(arr[i] === 99 || arr[i] == undefined) break;
 		const instruction = parseInstruction(arr[i])
 
@@ -104,8 +104,8 @@ function execute(codes){
 			const param1 = instruction.param1(arr, i, 1)
 			const param2 = instruction.param2(arr, i, 2)
 			const storePosition = instruction.storePosition(arr, i, 3)
-
-			if(storePosition !== undefined) arr[storePosition] = instruction.operation(param1,param2)
+      const result = instruction.operation(param1, param2)
+			if(storePosition !== undefined) arr[storePosition] = result
 			i += instruction.length
 		}  else if(instruction.length === 3){
 			// jumpIfTrue (05), jumpIfFalse(06)
@@ -121,6 +121,7 @@ function execute(codes){
 			const result =  instruction.operation(arr, storePosition)
 			if(instruction.modifies) arr[storePosition] = result
       i += instruction.length
+      if(pauseAt4 && instruction.opCode == "04") return {arr: arr, pointer: i, output: output, inputIndex: inputIndex}
 		} else {
 			throw new Error("Unknown instruction: "+JSON.stringify(instruction))
 		}
@@ -135,9 +136,18 @@ function run(codes, inputs){
   output = []
   inputIndex = 0
   inputValues = inputs
-  return execute(codes)
+  return runPause(codes, inputs, false, 0, 0)
+}
+
+function runPause(codes, inputs, pauseAt4, pointer, inputIndx){
+  output = []
+  inputIndex = 0
+  inputValues = inputs
+  inputIndex = inputIndx
+  return execute(codes, pauseAt4, pointer)
 }
 
 module.exports = {
   run: run
+  , runPause: runPause
 }
