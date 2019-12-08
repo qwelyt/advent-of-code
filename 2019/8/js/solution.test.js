@@ -63,3 +63,83 @@ it('solve A', () => {
   const result = app.solveA(data, rows, cols, [1, 2], operation)
   expect(result).toBe(expected)
 })
+
+describe('Solve given examples, B', () => {
+  it('1', () => {
+    const data = "0222112222120000"
+    const rows = 2
+    const cols = 2
+    const operation = (a,b) => a*b
+    const expected = [[0,1], [1,0]]
+    const result = app.solveB(data, rows, cols, operation)
+    expect(result).toStrictEqual(expected)
+  })
+})
+describe('Solve basic examples, B', () => {
+  it('1', () => {
+    const data = "121" +
+                 "212" + 
+                 ""+
+                 "012"+
+                 "012"
+    const rows = 2
+    const cols = 3
+    const operation = (a,b) => a*b
+    const expected = [[1,1,1],[0,1,2]]
+    const result = app.solveB(data, rows, cols, operation)
+    expect(result).toStrictEqual(expected)
+  })
+  it('2', () => {
+    const data = "22220" +
+                 "12222" + 
+                 "22222"+
+                 ""+
+                 "22222"+
+                 "01222"+
+                 "00221" +
+                 "" +
+                 "00122" +
+                 "12120" +
+                 "22001" +
+                 "" +
+                 "01201" +
+                 "21001" +
+                 "02102"
+    const rows = 3
+    const cols = 5
+    const operation = (a,b) => a*b
+    const expected = [[0,0,1,0,0],[1,1,1,0,0], [0,0,0,0,1]]
+    const result = app.solveB(data, rows, cols, operation)
+    expect(result).toStrictEqual(expected)
+  })
+})
+
+it('solve B', () => {
+  const data = file
+  const rows = 6
+  const cols = 25
+  const operation = (a,b) => a*b
+  const expected = [
+    [0,1,1,0,0,0,1,1,0,0,1,0,0,1,0,1,1,1,0,0,1,1,1,1,0]
+    , [1,0,0,1,0,1,0,0,1,0,1,0,1,0,0,1,0,0,1,0,0,0,0,1,0]
+    , [1,0,0,1,0,1,0,0,0,0,1,1,0,0,0,1,0,0,1,0,0,0,1,0,0]
+    , [1,1,1,1,0,1,0,0,0,0,1,0,1,0,0,1,1,1,0,0,0,1,0,0,0]
+    , [1,0,0,1,0,1,0,0,1,0,1,0,1,0,0,1,0,0,0,0,1,0,0,0,0]
+    , [1,0,0,1,0,0,1,1,0,0,1,0,0,1,0,1,0,0,0,0,1,1,1,1,0]
+  ]
+  const result = app.solveB(data, rows, cols, operation)
+
+  const strings = []
+  for(let row = 0; row<rows; ++row){
+    let str = ""
+    for(let col = 0; col<cols; ++col){
+      const a = result[row][col]
+      const s = a == 0 ? " " : "#"
+      str += s
+    }
+    strings.push(str)
+  }
+  const concated = strings.reduce((a,c) => a+"\n"+c)
+  console.log(concated)
+  expect(result).toStrictEqual(expected)
+})

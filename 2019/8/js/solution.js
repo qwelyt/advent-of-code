@@ -23,6 +23,36 @@ function solveA(data, rows, cols, find, operation){
   return no.reduce((a,c) => operation(a,c))
 }
 
+function solveB(data, rows, cols, operation){
+  const arr = mapData(data, rows, cols).map(a => divideArr(a, cols))
+
+  let result = [];
+  for(let i=0;i<rows;++i) {
+    result.push([])
+    for(let j=0;j<cols;j++) result[i].push(2)
+  }
+
+  for(let layer = 0; layer<arr.length; ++layer){
+    for(let row = 0; row<rows; ++row){
+      for(let col = 0; col<cols; ++col){
+        const a = arr[layer][row][col]
+        if(a !== 2 && result[row][col]==2) {
+          result[row][col] = a
+        }
+      }
+    }
+  }
+  return result
+}
+
+
+    // const data = "0222112222120000"
+    // const rows = 2
+    // const cols = 2
+    // const operation = (a,b) => a*b
+    // const p = solveB(data, rows, cols, operation)
+
 module.exports = {
   solveA: solveA
+  , solveB: solveB
 }
