@@ -407,3 +407,76 @@ describe('Day 9 instructions', () => {
     expect(result).toStrictEqual(expected)
   })
 })
+
+
+describe('Day 2', () => {
+  const file = require('../../2/js/read-input.js')
+
+  it('solve 2 A', () => {
+      const codes = file
+      const result = computer.compute(codes)
+      const expected = 5866714
+      expect(result.output[result.output.length-1]).toBe(expected)
+  })
+  xit('solve 2 B', () => {
+      const expected = 5208
+      const input = file.split(',').map(s => Number.parseInt(s));
+      let solved = false;
+      let result = [];
+      for(let noun = 0; noun < 100; noun++){
+        for(let verb = 0; verb < 100; verb++){
+          try{
+            input[1] = noun
+            input[2] = verb
+            result = computer.compute(input);
+            // console.log(result)
+            if(result[0] == 19690720){
+              solved = true;
+              break;
+            }
+          } catch (Error){}
+        }
+        if(solved){
+          break;
+        }
+      }
+      console.log(result[0])
+  })
+
+})
+
+describe('Day 5', () => {
+  const file = require('../../5/js/read-input.js')
+
+  it('solve 5 A', () => {
+      const codes = file
+      const result = computer.compute(codes, [1])
+      const expected = 6761139
+      expect(result.output[result.output.length-1]).toBe(expected)
+  })
+  it('solve 5 B', () => {
+      const codes = file
+      const result = computer.compute(codes,[5])
+      const expected = [9217546]
+      expect(result.output).toStrictEqual(expected)
+  })
+})
+
+describe('Day 9', () => {
+  const file = require('../../9/js/read-input.js')
+
+  it('solve 9 A', () => {
+      const codes = file
+      const result = computer.compute(codes,[1])
+      const expected = [3063082071]
+      // console.log(result)
+      expect(result.output).toStrictEqual(expected)
+  })
+  it('solve 9 B', () => {
+      const codes = file
+      const result = computer.compute(codes,[2])
+      const expected = [81348]
+      // console.log(result)
+      expect(result.output).toStrictEqual(expected)
+  })
+})
