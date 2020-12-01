@@ -17,11 +17,8 @@ func TestSumToTarget(t *testing.T) {
 	values := []int{1721, 979, 366, 299, 675, 1456}
 	result := SumToTarget(values, 2020)
 	expected := Pair{1721, 299}
-	if result.left != expected.left {
-		t.Errorf("Value incorrect. Wanted %d, got %d", expected.left, result.left)
-	}
-	if result.right != expected.right {
-		t.Errorf("Value incorrect. Wanted %d, got %d", expected.right, result.right)
+	if result != expected {
+		t.Errorf("Value incorrect. Wanted %d, got %d", expected, result)
 	}
 }
 

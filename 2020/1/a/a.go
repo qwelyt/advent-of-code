@@ -36,17 +36,18 @@ func ReadFile(filePath string) []int {
 }
 
 func SumToTarget(values []int, target int) Pair {
-	for i := 0; i < len(values); i++ {
-		for j := 0; j < len(values); j++ {
-			if i == j {
-				continue
-			}
-			if values[i]+values[j] == target {
-				return Pair{values[i], values[j]}
-			}
+	m := make(map[int]int)
+	for _, v := range values {
+		m[target-v] = v
+	}
+
+	for _, v := range m {
+		other, ok := m[v]
+		if ok {
+			return Pair{v, other}
 		}
 	}
-	return Pair{0, 0}
+	return Pair{}
 }
 
 func Multiply(a int, b int) int {
