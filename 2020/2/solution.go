@@ -79,9 +79,8 @@ func ValidPasswords_partB(passwords []Password) (int, int) {
 	var valid, invalid int
 
 	for _, pass := range passwords {
-		str := strings.Split(pass.str, "")
-		first := str[pass.min-1]
-		second := str[pass.max-1]
+		first := string(pass.str[pass.min-1])
+		second := string(pass.str[pass.max-1])
 
 		if first == pass.letter && second == pass.letter {
 			invalid++
