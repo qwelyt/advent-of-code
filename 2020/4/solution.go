@@ -9,6 +9,18 @@ import (
 	"strings"
 )
 
+var mustHaveFields = []string{"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"}
+
+// var colours = []string{"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}
+var validColours = map[string]bool{
+	"amb": true,
+	"blu": true,
+	"brn": true,
+	"gry": true,
+	"grn": true,
+	"hzl": true,
+	"oth": true}
+
 func ReadFile(filePath string) []string {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -125,22 +137,8 @@ func ValidValue(value string, field string) bool {
 			}
 		}
 	case "ecl":
-		switch value {
-		case "amb":
-			return true
-		case "blu":
-			return true
-		case "brn":
-			return true
-		case "grn":
-			return true
-		case "gry":
-			return true
-		case "hzl":
-			return true
-		case "oth":
-			return true
-		}
+		_, present := validColours[value]
+		return present
 	case "pid":
 		if len(value) == 9 {
 			num, err := strconv.Atoi(value)
@@ -174,14 +172,12 @@ func ValidPassportsWithValidation(passports []map[string]string, mustHaveFields 
 }
 
 func PartA(input []string) (int, int, int) {
-	mustHaveFields := []string{"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"}
 	passports := ProcessData(input)
 	valid, invalid, total := ValidPassportsNoValidation(passports, mustHaveFields)
 	return valid, invalid, total
 }
 
 func PartB(input []string) (int, int, int) {
-	mustHaveFields := []string{"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"}
 	passports := ProcessData(input)
 	valid, invalid, total := ValidPassportsWithValidation(passports, mustHaveFields)
 	return valid, invalid, total
