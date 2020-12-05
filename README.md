@@ -1,5 +1,5 @@
 # advent-of-code
-Repo to host code used to solve Advent of Code problems
+Repo to host code used to solve [Advent of Code](https://adventofcode.com/) problems
 
 
 All problems were created by [Eric Wastl](http://was.tl/) who is awesome for creating Advent of Code.  
