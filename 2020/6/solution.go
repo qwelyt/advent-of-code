@@ -79,18 +79,9 @@ func CountYesPerGroup(input []string, countFn func([]string) int) []int {
 	return yes
 }
 
-func CountAnyYes(input []string) int {
+func Count(input []string, countFn func([]string) int) int {
 	var result int
-	ypg := CountYesPerGroup(input, CountGroupAnyYes)
-	for _, y := range ypg {
-		result = result + y
-	}
-	return result
-}
-
-func CountAllYes(input []string) int {
-	var result int
-	ypg := CountYesPerGroup(input, CountGroupAllYes)
+	ypg := CountYesPerGroup(input, countFn)
 	for _, y := range ypg {
 		result = result + y
 	}
@@ -100,8 +91,8 @@ func CountAllYes(input []string) int {
 func main() {
 	// input := ReadFile("example.txt")
 	input := ReadFile("input.txt")
-	partA := CountAnyYes(input)
+	partA := Count(input, CountGroupAnyYes)
 	fmt.Printf("=== Part A ===\nSum yeses: %d\n", partA)
-	partB := CountAllYes(input)
+	partB := Count(input, CountGroupAllYes)
 	fmt.Printf("=== Part B ===\nSum yeses: %d\n", partB)
 }

@@ -29,7 +29,7 @@ func verifyAllGroupCount(t *testing.T, input []string, expected int) {
 func TestCountAnyYes(t *testing.T) {
 	input := ReadFile("example.txt")
 	expected := 11
-	result := CountAnyYes(input)
+	result := Count(input, CountGroupAnyYes)
 	if expected != result {
 		t.Errorf("Expected: %d, Got: %d", expected, result)
 	}
@@ -37,7 +37,7 @@ func TestCountAnyYes(t *testing.T) {
 func TestCountAllYes(t *testing.T) {
 	input := ReadFile("example.txt")
 	expected := 6
-	result := CountAllYes(input)
+	result := Count(input, CountGroupAllYes)
 	if expected != result {
 		t.Errorf("Expected: %d, Got: %d", expected, result)
 	}
