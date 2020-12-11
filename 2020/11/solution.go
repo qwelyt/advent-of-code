@@ -92,27 +92,89 @@ func AdjacentCheck(seats [][]string, y int, x int, checkFor map[string]bool, goa
 	return false
 }
 
-func FreeSeatCheck(seats [][]string, y int, x int, checkFor map[string]bool) bool {
-	for i := -1; i < len(seats) && i < 2; i++ {
-		yi := y + i
-		if yi < 0 || yi > len(seats)-1 {
-			continue
-		}
-		for j := -1; j < len(seats[yi]) && j < 2; j++ {
-			xj := x + j
-			if xj < 0 || xj > len(seats[yi])-1 {
-				continue
+func SightCheck(seats [][]string, y int, x int, checkFor map[string]bool) int {
+	var num int
+	// Check straight up
+	for i := y - 1; i > -1; i-- {
+		seat := seats[i][x]
+		if seat == occupied || seat == freeSeat {
+			if checkFor[seat] {
+				num++
 			}
-			if yi == y && xj == x {
-				continue
-			}
-			if checkFor[seats[yi][xj]] {
-				return false
-			}
+			break
 		}
 	}
-	return true
-
+	// Check down
+	for i := y + 1; i < len(seats); i++ {
+		seat := seats[i][x]
+		if seat == occupied || seat == freeSeat {
+			if checkFor[seat] {
+				num++
+			}
+			break
+		}
+	}
+	// Check left
+	for j := x - 1; j > -1; j-- {
+		seat := seats[y][j]
+		if seat == occupied || seat == freeSeat {
+			if checkFor[seat] {
+				num++
+			}
+			break
+		}
+	}
+	// Check right
+	for j := x + 1; j < len(seats[y]); j++ {
+		seat := seats[y][j]
+		if seat == occupied || seat == freeSeat {
+			if checkFor[seat] {
+				num++
+			}
+			break
+		}
+	}
+	// Up left
+	for i, j := y-1, x-1; i > -1 && j > -1; i, j = i-1, j-1 {
+		seat := seats[i][j]
+		if seat == occupied || seat == freeSeat {
+			if checkFor[seat] {
+				num++
+			}
+			break
+		}
+	}
+	// Up right
+	for i, j := y-1, x+1; i > -1 && j < len(seats[y]); i, j = i-1, j+1 {
+		seat := seats[i][j]
+		if seat == occupied || seat == freeSeat {
+			if checkFor[seat] {
+				num++
+			}
+			break
+		}
+	}
+	// Down left
+	for i, j := y+1, x-1; i < len(seats) && j > -1; i, j = i+1, j-1 {
+		seat := seats[i][j]
+		if seat == occupied || seat == freeSeat {
+			if checkFor[seat] {
+				num++
+			}
+			break
+		}
+	}
+	// Down right
+	for i, j := y+1, x+1; i < len(seats) && j < len(seats[y]); i, j = i+1, j+1 {
+		seat := seats[i][j]
+		if seat == occupied || seat == freeSeat {
+			if checkFor[seat] {
+				num++
+			}
+			break
+		}
+	}
+	return num
 }
 
 func ShouldChange(seats [][]string, y int, x int) (bool, string) {
@@ -124,11 +186,34 @@ func ShouldChange(seats [][]string, y int, x int) (bool, string) {
 	switch seat {
 	case freeSeat:
 		if !AdjacentCheck(seats, y, x, occupiedCheck, 1) {
-			// if FreeSeatCheck(seats, y, x, occupiedCheck) {
 			return true, occupied
 		}
 	case occupied:
 		if AdjacentCheck(seats, y, x, occupiedCheck, 4) {
+			return true, freeSeat
+		}
+	case floor:
+		return false, floor
+	}
+	return false, seat
+}
+
+func ShouldChangeBySight(seats [][]string, y int, x int) (bool, string) {
+	seat := seats[y][x]
+	// freeCheck := map[string]bool{
+	// 	occupied: true,
+	// }
+	occupiedCheck := map[string]bool{
+		occupied: true,
+	}
+
+	switch seat {
+	case freeSeat:
+		if SightCheck(seats, y, x, occupiedCheck) == 0 {
+			return true, occupied
+		}
+	case occupied:
+		if SightCheck(seats, y, x, occupiedCheck) > 4 {
 			return true, freeSeat
 		}
 	case floor:
@@ -149,14 +234,14 @@ func Equals(a [][]string, b [][]string) bool {
 
 }
 
-func Stabilize(in [][]string) [][]string {
+func Stabilize(in [][]string, changFn func([][]string, int, int) (bool, string)) [][]string {
 	var previous = OccupyAllSeats(in)
 	current := EmptyArr(in)
 
 	for {
 		for i := 0; i < len(previous); i++ {
 			for j := 0; j < len(previous[i]); j++ {
-				if y, v := ShouldChange(previous, i, j); y {
+				if y, v := changFn(previous, i, j); y {
 					current[i][j] = v
 				} else {
 					current[i][j] = previous[i][j]
@@ -192,7 +277,9 @@ func CountSeats(in [][]string, seat string) int {
 
 func main() {
 	input := ReadFile("input.txt")
-	stable := Stabilize(input)
+	stable := Stabilize(input, ShouldChange)
 	// fmt.Println(stable)
 	fmt.Printf("=== Part A ===\nOccupied seats: %d\n\n", CountSeats(stable, occupied))
+	stableB := Stabilize(input, ShouldChangeBySight)
+	fmt.Printf("=== Part B ===\nOccupied seats: %d\n\n", CountSeats(stableB, occupied))
 }
