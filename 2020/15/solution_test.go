@@ -32,6 +32,26 @@ func TestPartAExamples(t *testing.T) {
 	}
 }
 
+func TestPartAExamples_channels(t *testing.T) {
+	var cases = map[int][]int{
+		436:  {0, 3, 6},
+		1:    {1, 3, 2},
+		10:   {2, 1, 3},
+		27:   {1, 2, 3},
+		78:   {2, 3, 1},
+		438:  {3, 2, 1},
+		1836: {3, 1, 2},
+	}
+
+	for expected, input := range cases {
+		result := PartAChannels(input, 2020)
+
+		if expected != result {
+			t.Errorf("Expected: %d, Got: %d", expected, result)
+		}
+	}
+}
+
 func TestPartBExamples(t *testing.T) {
 	var cases = map[int][]int{
 
