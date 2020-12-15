@@ -41,6 +41,9 @@ func PartA(input []int, spokenAt int) int {
 			diff := previousTimes[1] - previousTimes[0]
 			lastSpoken = diff
 			spoken[diff] = append(spoken[diff], i)
+			if len(spoken[diff]) > 2 {
+				spoken[diff] = spoken[diff][len(spoken[diff])-2:]
+			}
 		}
 	}
 
