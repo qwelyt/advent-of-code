@@ -52,3 +52,16 @@ func TestPartBExamples(t *testing.T) {
 		}
 	}
 }
+
+func TestSolve(t *testing.T) {
+	input := []int{16, 1, 0, 18, 12, 14, 19}
+	partA := PartA(input, 2020)
+	if partA != 929 {
+		t.Errorf("Part A broke. Got %d", partA)
+	}
+	partB := PartA(input, 30000000)
+	if partB != 16671510 {
+		t.Errorf("Part B broke. Got %d", partB)
+	}
+
+}
