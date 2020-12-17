@@ -141,14 +141,8 @@ func Expand(a [][][]string) [][][]string {
 	var out = make([][][]string, len(a)+2)
 	for z := 0; z < len(out); z++ {
 		out[z] = make([][]string, len(a[0])+2)
-	}
-	for z := 0; z < len(out); z++ {
 		for y := 0; y < len(out[z]); y++ {
 			out[z][y] = make([]string, len(a[0][0])+2)
-		}
-	}
-	for z := 0; z < len(out); z++ {
-		for y := 0; y < len(out[z]); y++ {
 			for x := 0; x < len(out[z][y]); x++ {
 				out[z][y][x] = "."
 			}
@@ -167,22 +161,10 @@ func Expand4d(a [][][][]string) [][][][]string {
 	var out = make([][][][]string, len(a)+2)
 	for z := 0; z < len(out); z++ {
 		out[z] = make([][][]string, len(a[0])+2)
-	}
-	for z := 0; z < len(out); z++ {
 		for y := 0; y < len(out[z]); y++ {
 			out[z][y] = make([][]string, len(a[0][0])+2)
-		}
-	}
-	for z := 0; z < len(out); z++ {
-		for y := 0; y < len(out[z]); y++ {
 			for x := 0; x < len(out[z][y]); x++ {
 				out[z][y][x] = make([]string, len(a[0][0][0])+2)
-			}
-		}
-	}
-	for z := 0; z < len(out); z++ {
-		for y := 0; y < len(out[z]); y++ {
-			for x := 0; x < len(out[z][y]); x++ {
 				for w := 0; w < len(out[z][y][x]); w++ {
 					out[z][y][x][w] = "."
 				}
@@ -292,7 +274,6 @@ func RunSequence4d(input [][][][]string, times int, changeFn func(int, int, int,
 		current = Expand4d(current)
 		previous = Copy4d(current)
 	}
-	// fmt.Println(previous)
 	return current
 }
 
