@@ -33,7 +33,25 @@ func TestLTRSolve(t *testing.T) {
 		}
 	}
 }
-func TestSolveEquation(t *testing.T) {
+
+func TestAOMSolve(t *testing.T) {
+	var cases = map[int]string{
+		3:  "1 + 2",
+		2:  "1 + 1 * 1",
+		24: "3 + 3 * 4",
+		0:  "3 + 2 - 1 * 0",
+		10: "2 * 2 + 3",
+		18: "10 - 1 * 2 + 2 / 2", // 10 - 1 * 4 / 2 -> LTRSolve -> 9 * 4 / 2 -> 36 / 2 -> 18
+	}
+	for expected, input := range cases {
+		result := AOMSolve(input)
+		if expected != result {
+			t.Errorf("Equation: %v\nExpected: %d, got %d", input, expected, result)
+		}
+	}
+}
+
+func TestSolveEquationLTR(t *testing.T) {
 	var cases = map[int]string{
 		82: "1 + 2 + (3 * 4) + ((5 + 6) + (7 * 8))",
 	}
@@ -45,7 +63,7 @@ func TestSolveEquation(t *testing.T) {
 	}
 }
 
-func TestAOMSolve(t *testing.T) {
+func TestSolveEquationAOM(t *testing.T) {
 	var cases = map[int]string{
 		51:     "1 + (2 * 3) + (4 * (5 + 6))",
 		46:     "2 * 3 + (4 * 5)",

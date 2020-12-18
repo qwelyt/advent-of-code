@@ -57,7 +57,42 @@ func LTRSolve(eq string) int {
 }
 
 func AOMSolve(eq string) int {
-	return 0
+	if len(strings.Split(eq, "+")) == 1 {
+		return LTRSolve(eq)
+	}
+	var sum int
+	e := strings.Split(eq, " ")
+	checkEnd := false
+	for {
+		for i := 0; i < len(e); i++ {
+			checkEnd = true
+			if e[i] == "+" {
+				a := e[i-1]
+				b := e[i+1]
+				sub := a + " " + e[i] + " " + b
+				subSolved := LTRSolve(sub)
+				newE := e[:i-1]
+				newE = append(newE, strconv.Itoa(subSolved))
+				newE = append(newE, e[i+2:]...)
+				e = newE
+				checkEnd = false
+				break
+			}
+		}
+		if checkEnd {
+			var str string
+			for i, s := range e {
+				if i != 0 {
+					str += " "
+				}
+				str += s
+			}
+			sum = LTRSolve(str)
+			break
+		}
+	}
+
+	return sum
 }
 
 func SolveEquation(eq string, solver func(string) int) int {
@@ -87,7 +122,7 @@ func SolveEquation(eq string, solver func(string) int) int {
 			}
 		}
 		if checkEnd && f == -1 && b == len(eq) {
-			sum = LTRSolve(e)
+			sum = solver(e)
 			break
 		}
 	}
@@ -109,11 +144,26 @@ func SolveA(equations []string) int64 {
 	}
 	return sum
 }
+func SolveB(equations []string) int64 {
+	var answers []int
+	for _, eq := range equations {
+		answers = append(answers, SolveEquation(eq, AOMSolve))
+	}
+	var sum int64
+	for _, i := range answers {
+		sum += int64(i)
+	}
+	return sum
+}
 
 func main() {
 	input := ReadFile("input.txt")
 	{
 		partA := SolveA(input)
 		fmt.Printf("=== Part A ===\nSum of all: %d\n", partA)
+	}
+	{
+		partB := SolveB(input)
+		fmt.Printf("=== Part B ===\nSum of all: %d\n", partB)
 	}
 }
