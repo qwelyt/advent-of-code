@@ -12,5 +12,9 @@ fn lines(filename: impl AsRef<Path>) -> io::Result<Vec<String>> {
 }
 
 pub fn string_to_i32(input: Vec<String>) -> Vec<i32> {
-    input.iter().map(|x| -> i32{ x.parse().unwrap() }).collect()
+    input.iter().map(|x| to_i32(x)).collect()
+}
+
+pub fn to_i32(string: &str) -> i32 {
+    string.parse::<i32>().unwrap()
 }
