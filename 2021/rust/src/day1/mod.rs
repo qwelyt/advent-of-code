@@ -1,8 +1,8 @@
-use crate::util::{lines_from_file, string_to_i32};
+use crate::util::{lines_from_file, strings_to_i32};
 
 pub fn day1() {
     println!("== Day 1 ==");
-    let input = string_to_i32(lines_from_file("src/day1/input.txt"));
+    let input = strings_to_i32(lines_from_file("src/day1/input.txt"));
     let a = part_a(&input);
     println!("Part A: {}", a);
     let b = part_b(&input);
@@ -47,7 +47,7 @@ mod tests {
     #[test]
     fn part_a_test_input() {
         let filename = "src/day1/test-input.txt";
-        let input = string_to_i32(lines_from_file(filename));
+        let input = strings_to_i32(lines_from_file(filename));
         let result = part_a(&input);
         assert_eq!(7, result);
     }
@@ -55,7 +55,7 @@ mod tests {
     #[test]
     fn part_b_test_input() {
         let filename = "src/day1/test-input.txt";
-        let input = string_to_i32(lines_from_file(filename));
+        let input = strings_to_i32(lines_from_file(filename));
         let result = part_b(&input);
         assert_eq!(5, result);
     }
@@ -63,7 +63,7 @@ mod tests {
     #[test]
     fn part_a_real() {
         let filename = "src/day1/input.txt";
-        let input = string_to_i32(lines_from_file(filename));
+        let input = strings_to_i32(lines_from_file(filename));
         let result = part_a(&input);
         assert_eq!(1393, result);
     }
@@ -71,7 +71,7 @@ mod tests {
     #[test]
     fn part_b_real() {
         let filename = "src/day1/input.txt";
-        let input = string_to_i32(lines_from_file(filename));
+        let input = strings_to_i32(lines_from_file(filename));
         let result = part_b(&input);
         assert_eq!(1359, result);
     }

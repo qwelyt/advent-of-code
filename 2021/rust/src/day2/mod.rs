@@ -1,4 +1,4 @@
-use crate::util::{lines_from_file, to_i32};
+use crate::util::{lines_from_file, string_to_i32};
 
 pub fn day2() {
     println!("== Day 2 ==");
@@ -50,7 +50,7 @@ fn part_b(input: &Vec<Instruction>) -> i32 {
 fn to_instruction(input: Vec<String>) -> Vec<Instruction> {
     input.iter()
         .map(|s| s.split(' ').collect())
-        .map(|s: Vec<&str>| Instruction(s[0].to_string(), to_i32(s[1])))
+        .map(|s: Vec<&str>| Instruction(s[0].to_string(), string_to_i32(s[1])))
         .collect()
 }
 
