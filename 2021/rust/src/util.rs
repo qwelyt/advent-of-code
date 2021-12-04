@@ -15,6 +15,10 @@ pub fn strings_to_i32(input: Vec<String>) -> Vec<i32> {
     input.iter().map(|x| string_to_i32(x)).collect()
 }
 
+pub fn stringsp_to_i32(input: Vec<&str>) -> Vec<i32> {
+    input.iter().map(|x| string_to_i32(x)).collect()
+}
+
 pub fn string_to_i32(string: &str) -> i32 {
     string.parse::<i32>().unwrap()
 }
