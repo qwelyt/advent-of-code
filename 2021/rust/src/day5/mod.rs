@@ -61,54 +61,38 @@ fn part_b(input: &Vec<String>) -> usize {
     let lines: Vec<Line> = to_line_points(input);
     for line in lines {
         if line.from.x != line.to.x && line.from.y != line.to.y {
+            // println!("{:?}",line);
             // Diagonal
-            let mut y = line.from.y;
-            let mut x = line.from.x;
-            if line.from.x < line.to.x {
-                // println!("\\ {:?}", line);
-                if line.from.y < line.to.y {
-                    // println!("down");
-                    while x <= line.to.x && y <= line.to.y {
-                        let point = Point { x, y };
-                        // println!("{:?}", point);
-                        let value = *map.get(&point).unwrap_or(&0);
-                        map.insert(point, value + 1);
-                        x += 1;
-                        y += 1;
-                    }
-                } else {
-                    // println!("up");
-                    while x <= line.to.x && y >= line.to.y {
-                        let point = Point { x, y };
-                        // println!("{:?}", point);
-                        let value = *map.get(&point).unwrap_or(&0);
-                        map.insert(point, value + 1);
-                        x += 1;
-                        y -= 1;
-                    }
+            if (line.from.x < line.to.x && line.from.y < line.to.y)
+                || (line.from.x > line.to.x && line.from.y > line.to.y) {
+                // Down right is the same as up left
+
+                let from = get_from(&line.from, &line.to);
+                let to = get_to(&line.from, &line.to);
+                let mut x = from.x;
+                let mut y = from.y;
+                while x <= to.x && y <= to.y {
+                    let point = Point { x, y };
+                    // println!("{:?}", point);
+                    let value = *map.get(&point).unwrap_or(&0);
+                    map.insert(point, value + 1);
+                    x += 1;
+                    y += 1;
                 }
             } else {
-                // println!("/ {:?}", line);
-                if line.from.y < line.to.y {
-                    // println!("down");
-                    while x >= line.to.x && y <= line.to.y {
-                        let point = Point { x, y };
-                        // println!("{:?}", point);
-                        let value = *map.get(&point).unwrap_or(&0);
-                        map.insert(point, value + 1);
-                        x -= 1;
-                        y += 1;
-                    }
-                } else {
-                    // println!("up");
-                    while x >= line.to.x && y >= line.to.y {
-                        let point = Point { x, y };
-                        // println!("{:?}", point);
-                        let value = *map.get(&point).unwrap_or(&0);
-                        map.insert(point, value + 1);
-                        x -= 1;
-                        y -= 1;
-                    }
+                // Up right is the same as down left
+                let from = if line.from.x < line.to.x { &line.to } else { &line.from };
+                let to = if line.from.x < line.to.x { &line.from } else { &line.to };
+
+                let mut x = from.x;
+                let mut y = from.y;
+                while x >= to.x && y <= to.y {
+                    let point = Point { x, y };
+                    // println!("{:?}", point);
+                    let value = *map.get(&point).unwrap_or(&0);
+                    map.insert(point, value + 1);
+                    x -= 1;
+                    y += 1;
                 }
             }
         } else {
@@ -133,6 +117,20 @@ fn part_b(input: &Vec<String>) -> usize {
     map.iter()
         .filter(|(_, value)| **value > 1)
         .count()
+}
+
+fn get_from(from: &Point, to: &Point) -> Point {
+    if from.x < to.x && from.y < to.y {
+        return Point { x: from.x, y: from.y };
+    }
+    Point { x: to.x, y: to.y }
+}
+
+fn get_to(from: &Point, to: &Point) -> Point {
+    if from.x < to.x && from.y < to.y {
+        return Point { x: to.x, y: to.y };
+    }
+    Point { x: from.x, y: from.y }
 }
 
 
