@@ -24,26 +24,23 @@ fn part_a(input: &Vec<String>) -> i32 {
 
 fn part_b(input: &Vec<String>) -> i32 {
     let positions: Vec<i32> = input.get(0)
-        .map(|s| s.split(",").collect())
+        .map(|s| s.split(",").collect::<Vec<&str>>())
         .unwrap()
         .iter()
         .map(|s| s.parse::<i32>().unwrap())
         .collect();
 
-    let mut fuel = i32::MAX;
+    let average = positions.iter().sum::<i32>() as f32 / positions.len() as f32;
 
-    for aim_here in *positions.iter().min().unwrap()..*positions.iter().max().unwrap() {
-        let mut cost = 0;
-        for pos in &positions {
-            let distance = (*pos - aim_here).abs();
-            cost += fuel_cost(distance);
-        }
-        if cost < fuel {
-            fuel = cost;
-        }
-    }
+    let ceil = average.ceil() as i32;
+    let floor = average.floor() as i32;
 
-    fuel
+    let fuel_cost: (i32, i32) = positions.iter()
+        .map(|p| (fuel_cost((*p - ceil).abs()), fuel_cost((*p - floor).abs())))
+        .reduce(|a, b| (a.0 + b.0, a.1 + b.1))
+        .unwrap();
+
+    i32::min(fuel_cost.0, fuel_cost.1)
 }
 
 fn fuel_cost(distance: i32) -> i32 {
