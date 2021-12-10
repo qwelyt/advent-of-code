@@ -16,7 +16,13 @@ fn part_a(input: &Vec<String>) -> i32 {
         .map(|l| l.chars().collect::<Vec<char>>())
         .collect();
 
-    let opening: HashSet<char> = HashSet::from(['(', '[', '{', '<']);
+    let open_close: HashMap<char, char> = HashMap::from([
+        ('(', ')'),
+        ('[', ']'),
+        ('{', '}'),
+        ('<', '>')
+    ]);
+    let opening: HashSet<char> = open_close.keys().map(|a| *a).collect();
     let scores: HashMap<char, i32> = HashMap::from([
         (')', 3),
         (']', 57),
@@ -24,12 +30,9 @@ fn part_a(input: &Vec<String>) -> i32 {
         ('>', 25137)
     ]);
 
-    let mut illegals: HashMap<char, i32> = HashMap::from([
-        (')', 0),
-        (']', 0),
-        ('}', 0),
-        ('>', 0)
-    ]);
+    let mut illegals: HashMap<char, i32> = open_close.iter()
+        .map(|(_, v)| (*v, 0))
+        .collect();
     for line in lines {
         let mut stack: VecDeque<char> = VecDeque::new();
         for c in line {
@@ -40,9 +43,7 @@ fn part_a(input: &Vec<String>) -> i32 {
                     panic!("Closing without any open left");
                 } else {
                     let oc = stack.pop_back().unwrap();
-                    if is_correct(oc, c) {
-                        continue;
-                    } else {
+                    if c != *(&open_close).get(&oc).unwrap() {
                         // println!("Found {} - {} to be incorrect", oc, c);
                         if let Some(x) = illegals.get_mut(&c) {
                             *x += 1;
@@ -65,13 +66,13 @@ fn part_b(input: &Vec<String>) -> u64 {
         .map(|l| l.chars().collect::<Vec<char>>())
         .collect();
 
-    let opening: HashSet<char> = HashSet::from(['(', '[', '{', '<']);
-    let closing_for: HashMap<char, char> = HashMap::from([
+    let open_close: HashMap<char, char> = HashMap::from([
         ('(', ')'),
         ('[', ']'),
         ('{', '}'),
         ('<', '>')
     ]);
+    let opening: HashSet<char> = open_close.keys().map(|a| *a).collect();
     let scores: HashMap<char, i32> = HashMap::from([
         (')', 1),
         (']', 2),
@@ -90,9 +91,7 @@ fn part_b(input: &Vec<String>) -> u64 {
                     panic!("Closing without any open left");
                 } else {
                     let oc = stack.pop_back().unwrap();
-                    if is_correct(oc, c) {
-                        continue;
-                    } else { // Incorrect line, ignore it
+                    if c != *open_close.get(&oc).unwrap() {
                         add_stack = false;
                     }
                 }
@@ -108,7 +107,7 @@ fn part_b(input: &Vec<String>) -> u64 {
         let mut v: Vec<char> = Vec::new();
         while !stack.is_empty() {
             let close_this = stack.pop_back().unwrap();
-            v.push(*closing_for.get(&close_this).unwrap());
+            v.push(*open_close.get(&close_this).unwrap());
         }
         completion.push(v);
     }
@@ -125,22 +124,6 @@ fn part_b(input: &Vec<String>) -> u64 {
     *completion_score.get(completion_score.len() / 2).unwrap()
 }
 
-
-fn is_correct(opening: char, closing: char) -> bool {
-    if opening == '(' && closing == ')' {
-        return true;
-    }
-    if opening == '[' && closing == ']' {
-        return true;
-    }
-    if opening == '{' && closing == '}' {
-        return true;
-    }
-    if opening == '<' && closing == '>' {
-        return true;
-    }
-    return false;
-}
 
 #[cfg(test)]
 mod tests {
