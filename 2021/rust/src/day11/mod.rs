@@ -22,7 +22,7 @@ fn part_a(input: &Vec<String>, steps: i32) -> usize {
 
     // println!("### Steps: {}  Start: {:?}", steps, current_state);
     let mut total_flashes: usize = 0;
-    for step in 1..=steps {
+    for _step in 1..=steps {
         current_state.iter_mut()
             .for_each(|l| l.iter_mut()
                 .for_each(|n| *n += 1)
@@ -44,8 +44,8 @@ fn part_a(input: &Vec<String>, steps: i32) -> usize {
                 .for_each(|adjacent| {
                     current_state.iter_mut().enumerate()
                         .for_each(|(row, r)| r.iter_mut().enumerate()
-                            .filter(|(col, c)| adjacent.contains(&Point { row, col: *col }))
-                            .for_each(|(col, c)| *c += 1)
+                            .filter(|(col, _)| adjacent.contains(&Point { row, col: *col }))
+                            .for_each(|(_col, c)| *c += 1)
                         );
                 });
             // println!("Current state AA: {:?}", &current_state);
@@ -63,10 +63,10 @@ fn part_a(input: &Vec<String>, steps: i32) -> usize {
         }
 
 
-        current_state.iter_mut().enumerate()
-            .for_each(|(row, r)| r.iter_mut().enumerate()
-                .filter(|(col, c)| **c > 9)
-                .for_each(|(col, c)| *c = 0));
+        current_state.iter_mut()
+            .for_each(|r| r.iter_mut()
+                .filter(|c| **c > 9)
+                .for_each(|c| *c = 0));
     }
 
     total_flashes
@@ -94,8 +94,8 @@ fn part_b(input: &Vec<String>) -> i32 {
                 .for_each(|adjacent| {
                     current_state.iter_mut().enumerate()
                         .for_each(|(row, r)| r.iter_mut().enumerate()
-                            .filter(|(col, c)| adjacent.contains(&Point { row, col: *col }))
-                            .for_each(|(col, c)| *c += 1)
+                            .filter(|(col, _c)| adjacent.contains(&Point { row, col: *col }))
+                            .for_each(|(_col, c)| *c += 1)
                         );
                 });
             let vec = flash(&current_state);
@@ -105,10 +105,10 @@ fn part_b(input: &Vec<String>) -> i32 {
             flashed = new_flashes;//new_flashes;
             flashed.iter().for_each(|p| { has_flashed.insert(p.clone()); });
         }
-        current_state.iter_mut().enumerate()
-            .for_each(|(row, r)| r.iter_mut().enumerate()
-                .filter(|(col, c)| **c > 9)
-                .for_each(|(col, c)| *c = 0));
+        current_state.iter_mut()
+            .for_each(|r| r.iter_mut()
+                .filter(|c| **c > 9)
+                .for_each(|c| *c = 0));
         if all_equals(0, &current_state) {
             all_has_flashed = true;
         }
@@ -117,11 +117,11 @@ fn part_b(input: &Vec<String>) -> i32 {
     step
 }
 
-fn all_equals(shold_equal: u8, state: &Vec<Vec<u8>>) -> bool {
+fn all_equals(should_equal: u8, state: &Vec<Vec<u8>>) -> bool {
     let mut ok = true;
-    for (row, r) in state.iter().enumerate() {
-        for (col, c) in r.iter().enumerate() {
-            if *c != shold_equal {
+    for r in state.iter() {
+        for c in r.iter() {
+            if *c != should_equal {
                 ok = false;
             }
         }
@@ -155,8 +155,8 @@ fn adjacent(rows: i32, cols: i32, points: &Vec<Point>) -> Vec<HashSet<Point>> {
 fn flash(state: &Vec<Vec<u8>>) -> Vec<Point> {
     state.iter().enumerate()
         .map(|(row, r)| r.iter().enumerate()
-            .filter(|(col, c)| **c > 9)
-            .map(|(col, c)| Point { row, col })
+            .filter(|(_col, c)| **c > 9)
+            .map(|(col, _c)| Point { row, col })
             .collect::<Vec<Point>>()
         ).flatten()
         .collect()
@@ -166,11 +166,11 @@ fn to_numbers(line: &String) -> Vec<u8> {
     line.split("").collect::<Vec<&str>>().iter().filter(|s| !s.is_empty()).map(|s| s.parse::<u8>().unwrap()).collect()
 }
 
-fn pretty_print(state: &Vec<Vec<u8>>) {
-    for line in state.iter() {
-        println!("{:?}", line);
-    }
-}
+// fn pretty_print(state: &Vec<Vec<u8>>) {
+//     for line in state.iter() {
+//         println!("{:?}", line);
+//     }
+// }
 
 #[cfg(test)]
 mod tests {
