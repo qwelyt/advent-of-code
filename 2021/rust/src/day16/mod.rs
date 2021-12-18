@@ -23,10 +23,10 @@ fn part_b(input: &Vec<String>) -> u64 {
     let packet = input.get(0).unwrap();
     // println!("{}", packet);
     let binary = to_binary(packet);
-    println!("{} bits", binary.len());
+    // println!("{} bits", binary.len());
     // println!("{:?}", binary);
     let (poop, _iter) = solve(&binary, 0);
-    println!("{:?}", poop);
+    // println!("{:?}", poop);
     return *poop.numbers.get(0).unwrap()
 }
 
