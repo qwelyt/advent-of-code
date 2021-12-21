@@ -190,7 +190,8 @@ fn parse(input: &Vec<String>) -> Vec<Scanner> {
 }
 
 fn part_b(_input: &Vec<String>) -> u32 {
-    todo!()
+    // todo!()
+    0
 }
 
 #[cfg(test)]
