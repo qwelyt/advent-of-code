@@ -52,14 +52,11 @@ fn part_b_2(input: &Vec<i32>) -> i32 {
 
 fn part_b_3(file: &str) -> i32 {
     let open = File::open(file).expect("Could not read file");
-    let mut tmp = Vec::new();
+    let mut tmp = 0;
     let mut top_three = vec![0,0,0];
     for line in BufReader::new(open).lines() {
         let string = line.unwrap();
         if string.is_empty() {
-            let sum = tmp.iter().sum();
-            tmp.clear();
-
             let mut lowest = i32::MAX;
             let mut index = 0;
             for i in 0..3 {
@@ -68,11 +65,12 @@ fn part_b_3(file: &str) -> i32 {
                     index = i;
                 }
             }
-            if sum > lowest {
-                top_three[index] = sum;
+            if tmp > lowest {
+                top_three[index] = tmp;
             }
+            tmp = 0;
         } else {
-            tmp.push(string.parse::<i32>().unwrap())
+            tmp += string.parse::<i32>().unwrap()
         }
     }
 
