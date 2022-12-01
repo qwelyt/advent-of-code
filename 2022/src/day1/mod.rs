@@ -1,12 +1,17 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-use crate::util::{lines_as_i32, vecs_i32};
+use std::time::Instant;
+
+use crate::util::{lines_as_i32, time, vecs_i32};
 
 pub fn day1() {
     println!("== Day 1 ==");
-    let input = get_input("src/day1/input.txt");
-    println!("Part A: {}", part_a(&input));
-    println!("Part B: {}", part_b(&input));
+    let input = "src/day1/input.txt";
+    // let input = "src/day1/aoc_2022_day01_large_input.txt";
+    // println!("Part A: {}", part_a(&input));
+    // println!("Part B: {}", part_b(&input));
+    time(part_a_3, input, "A");
+    time(part_b_3, input, "B");
 }
 
 fn get_input(file: &str) -> Vec<i32> {
@@ -50,10 +55,27 @@ fn part_b_2(input: &Vec<i32>) -> i32 {
     top_three.iter().sum()
 }
 
+
+fn part_a_3(file: &str) -> i32 {
+    let open = File::open(file).expect("Could not read file");
+    let mut count = 0;
+    let mut max = 0;
+    for line in BufReader::new(open).lines() {
+        let line = line.unwrap();
+        if line == "" {
+            max = std::cmp::max(max, count);
+            count = 0;
+        } else {
+            count += line.parse::<i32>().unwrap();
+        }
+    }
+    max
+}
+
 fn part_b_3(file: &str) -> i32 {
     let open = File::open(file).expect("Could not read file");
     let mut tmp = 0;
-    let mut top_three = vec![0,0,0];
+    let mut top_three = vec![0, 0, 0];
     for line in BufReader::new(open).lines() {
         let string = line.unwrap();
         if string.is_empty() {
@@ -123,6 +145,17 @@ mod tests {
         let part_b_2_time = Instant::now();
         println!("  took {}ms", part_b_2_time.duration_since(part_b_time).as_millis());
     }
+
+    #[ignore]
+    #[test]
+    fn a3() {
+        let instant = Instant::now();
+        let result = part_a_3("src/day1/aoc_2022_day01_large_input.txt");
+        let end = Instant::now();
+        print!("Part a 3: {} took {}ms", result, end.duration_since(instant).as_millis());
+        assert_eq!(184028272, result);
+    }
+
     #[ignore]
     #[test]
     fn b3() {
@@ -146,4 +179,4 @@ mod tests {
         let result = part_b(&input);
         assert_eq!(45000, result);
     }
-    }
+}
