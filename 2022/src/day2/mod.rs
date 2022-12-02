@@ -239,10 +239,21 @@ mod tests {
     fn big_a() {
         let input = "src/day2/aoc_2022_day02_large_input.txt";
         let start = Instant::now();
-        let result = part_a(input);
+        let result = part_a_2(input);
         let end = Instant::now();
         println!("Part A: {} took {}ms", result, end.duration_since(start).as_millis());
-        assert_eq!(15572, result);
+        assert_eq!(499982425, result);
+    }
+
+    #[ignore]
+    #[test]
+    fn big_b() {
+        let input = "src/day2/aoc_2022_day02_large_input.txt";
+        let start = Instant::now();
+        let result = part_b_2(input);
+        let end = Instant::now();
+        println!("Part B: {} took {}ms", result, end.duration_since(start).as_millis());
+        assert_eq!(499971558, result);
     }
 
     #[test]
