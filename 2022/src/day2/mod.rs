@@ -1,7 +1,7 @@
 use crate::util::lines;
 
 pub fn day2() {
-    print!("== Day 2 ==");
+    println!("== Day 2 ==");
     let input = "src/day2/input.txt";
     println!("Part A: {}", part_a(input));
     println!("Part B: {}", part_b(input));
