@@ -1,16 +1,30 @@
+use std::time::Instant;
 use crate::util::lines;
 
 pub fn day2() {
     println!("== Day 2 ==");
     let input = "src/day2/input.txt";
-    println!("Part A: {}", part_a(input));
-    println!("Part B: {}", part_b(input));
+    // let input = "src/day2/aoc_2022_day02_large_input.txt";
+    // println!("Part A: {}", part_a(input));
+    // println!("Part B: {}", part_b(input));
+    {
+        let start = Instant::now();
+        let result = part_a(input);
+        let end = Instant::now();
+        println!("Part A: {} took {}ns", result, end.duration_since(start).as_nanos());
+    }
+    {
+        let start = Instant::now();
+        let result = part_b(input);
+        let end = Instant::now();
+        println!("Part B: {} took {}ns", result, end.duration_since(start).as_nanos());
+    }
 }
 
 struct Value {
-    rock: i32,
-    paper: i32,
-    scissors: i32,
+    rock: usize,
+    paper: usize,
+    scissors: usize,
 }
 
 const VALUE: Value = Value {
@@ -20,9 +34,9 @@ const VALUE: Value = Value {
 };
 
 struct Scores {
-    loose: i32,
-    draw: i32,
-    win: i32,
+    loose: usize,
+    draw: usize,
+    win: usize,
 }
 
 const SCORES: Scores = Scores {
@@ -69,7 +83,7 @@ fn map_to_end(s: &str) -> End {
 }
 
 
-fn part_a(file: &str) -> i32 {
+fn part_a(file: &str) -> usize {
     let lines = lines(file);
     let mut tot = 0;
     for line in lines.iter() {
@@ -104,7 +118,7 @@ fn part_a(file: &str) -> i32 {
     tot
 }
 
-fn part_b(file: &str) -> i32 {
+fn part_b(file: &str) -> usize {
     let lines = lines(file);
     let mut tot = 0;
     for line in lines.iter() {
@@ -141,6 +155,7 @@ fn part_b(file: &str) -> i32 {
 
 #[cfg(test)]
 mod tests {
+    use std::time::Instant;
     use super::*;
 
     #[ignore]
@@ -161,6 +176,16 @@ mod tests {
     fn real_b() {
         let input = "src/day2/input.txt";
         assert_eq!(16098, part_b(input));
+    }
+    #[ignore]
+    #[test]
+    fn big_a() {
+        let input = "src/day2/aoc_2022_day02_large_input.txt";
+        let start = Instant::now();
+        let result = part_a(input);
+        let end = Instant::now();
+        println!("Part A: {} took {}ms", result, end.duration_since(start).as_millis());
+        assert_eq!(15572, result);
     }
 
     #[test]
