@@ -1,24 +1,14 @@
-use std::time::Instant;
-use crate::util::lines;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+
+use crate::util::{lines, time};
 
 pub fn day2() {
     println!("== Day 2 ==");
     let input = "src/day2/input.txt";
     // let input = "src/day2/aoc_2022_day02_large_input.txt";
-    // println!("Part A: {}", part_a(input));
-    // println!("Part B: {}", part_b(input));
-    {
-        let start = Instant::now();
-        let result = part_a(input);
-        let end = Instant::now();
-        println!("Part A: {} took {}ns", result, end.duration_since(start).as_nanos());
-    }
-    {
-        let start = Instant::now();
-        let result = part_b(input);
-        let end = Instant::now();
-        println!("Part B: {} took {}ns", result, end.duration_since(start).as_nanos());
-    }
+    time(part_a_2, input, "A");
+    time(part_b_2, input, "B");
 }
 
 struct Value {
@@ -153,9 +143,73 @@ fn part_b(file: &str) -> usize {
     tot
 }
 
+// A X = ROCK
+// B Y = PAPER
+// C Z = SCISSORS
+fn part_a_2(file: &str) -> i32 {
+    let open = File::open(file).expect("Could not read file");
+    let mut tot = 0;
+    let x = 1;
+    let y = 2;
+    let z = 3;
+    let loose = 0;
+    let draw = 3;
+    let win = 6;
+    for line in BufReader::new(open).lines() {
+        let line = line.unwrap();
+        tot += match line.as_str() {
+            "A X" => x + draw,
+            "A Y" => y + win,
+            "A Z" => z + loose,
+            "B X" => x + loose,
+            "B Y" => y + draw,
+            "B Z" => z + win,
+            "C X" => x + win,
+            "C Y" => y + loose,
+            "C Z" => z + draw,
+            &_ => 0,
+        }
+    }
+    tot
+}
+
+// A = ROCK
+// B = PAPER
+// C = SCISSORS
+// X = Loose
+// Y = Draw
+// Z = Win
+fn part_b_2(file: &str) -> i32 {
+    let open = File::open(file).expect("Could not read file");
+    let mut tot = 0;
+    let x = 0;
+    let y = 3;
+    let z = 6;
+    let rock = 1;
+    let paper = 2;
+    let scissors = 3;
+    for line in BufReader::new(open).lines() {
+        let line = line.unwrap();
+        tot += match line.as_str() {
+            "A X" => x + scissors,
+            "A Y" => y + rock,
+            "A Z" => z + paper,
+            "B X" => x + rock,
+            "B Y" => y + paper,
+            "B Z" => z + scissors,
+            "C X" => x + paper,
+            "C Y" => y + scissors,
+            "C Z" => z + rock,
+            &_ => 0,
+        }
+    }
+    tot
+}
+
 #[cfg(test)]
 mod tests {
     use std::time::Instant;
+
     use super::*;
 
     #[ignore]
@@ -169,6 +223,7 @@ mod tests {
     fn real_a() {
         let input = "src/day2/input.txt";
         assert_eq!(15572, part_a(input));
+        assert_eq!(15572, part_a_2(input));
     }
 
     #[ignore]
@@ -176,7 +231,9 @@ mod tests {
     fn real_b() {
         let input = "src/day2/input.txt";
         assert_eq!(16098, part_b(input));
+        assert_eq!(16098, part_b_2(input));
     }
+
     #[ignore]
     #[test]
     fn big_a() {

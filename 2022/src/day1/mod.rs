@@ -1,6 +1,5 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-use std::time::Instant;
 
 use crate::util::{lines_as_i32, time, vecs_i32};
 
