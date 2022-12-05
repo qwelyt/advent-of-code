@@ -1,9 +1,10 @@
+use std::fmt::Display;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Result};
 use std::path::Path;
 use std::time::Instant;
 
-pub fn time(f: fn(&str) -> i32, input: &str, part: &str) {
+pub fn time<T: Display>(f: fn(&str) -> T, input: &str, part: &str) {
     let start = Instant::now();
     let result = f(input);
     let end = Instant::now();

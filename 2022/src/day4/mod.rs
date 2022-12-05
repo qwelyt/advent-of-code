@@ -65,6 +65,12 @@ fn overlap(a: (i32, i32), b: (i32, i32)) -> bool {
 mod tests {
     use super::*;
 
+    #[ignore]
+    #[test]
+    fn runday() {
+        day4();
+    }
+
     #[test]
     fn part_a_test_input() {
         let input = "src/day4/test-input.txt";
