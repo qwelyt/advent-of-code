@@ -248,10 +248,12 @@ impl Cave {
 impl fmt::Debug for Cave {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         let max_occupied_y = self.occupied.iter().map(|p| p.coord.y).max().unwrap_or(0) + 1;
+        let max_occupied_x = self.occupied.iter().map(|p| p.coord.x).max().unwrap_or(0) + 1;
         let height = max(self.height, max_occupied_y);
-        writeln!(f, "{}x{} grid:", self.width, height)?;
+        let width = max(max_occupied_x, self.width);
+        writeln!(f, "{}x{} grid ({}x{}):", width, height, self.width, self.height)?;
         for y in 0..height {
-            for x in 0..self.width {
+            for x in 0..width {
                 if y == 0 && x == 500 {
                     write!(f, "+")?;
                 } else {
