@@ -70,6 +70,7 @@ struct Cave {
     width: usize,
     height: usize,
     occupied: HashSet<Position>,
+    grid: Vec<Vec<bool>>,
 }
 
 impl Cave {
@@ -108,11 +109,16 @@ impl Cave {
                 }
             }
         }
+        let mut grid = vec![vec![false; 2 * width as usize]; 2 + height as usize];
+        for o in stones.iter() {
+            grid[o.coord.y][o.coord.x] = true;
+        }
         // println!("{:?}", stones);
         Self {
             width: 1 + width as usize,
             height: 1 + height as usize,
             occupied: stones,
+            grid,
         }
     }
 
@@ -188,7 +194,7 @@ impl Cave {
         }
         false
     }
-    fn pour_sand_2(&mut self) -> u32 {
+    fn _pour_sand_2(&mut self) -> u32 {
         let start = GridCoord { x: 500, y: 0 };
         let mut units = 0;
         let mut _full = false;
@@ -212,6 +218,53 @@ impl Cave {
                     coord: curr_pos,
                     cell: Cell::Sand,
                 });
+            }
+        }
+        units
+    }
+
+    fn go_to2(&self, pos: &GridCoord, has_floor: bool) -> Option<Direction> {
+        if has_floor && GridCoord::down(pos).y == self.height + 1 {
+            return None;
+        }
+        let x = [
+            (GridCoord::down(pos), Direction::Down),
+            (GridCoord::left(pos), Direction::Left),
+            (GridCoord::right(pos), Direction::Right)
+        ];
+        for (gc, dir) in x {
+            if !self.grid[gc.y][gc.x] {
+                return Some(dir);
+            }
+        }
+        None
+    }
+    fn go(&self, pos: &GridCoord, has_floor: bool) -> Option<GridCoord> {
+        self.go_to2(pos, has_floor)
+            .map(|dir| match dir {
+                Direction::Left => GridCoord::left(pos),
+                Direction::Down => GridCoord::down(pos),
+                Direction::Right => GridCoord::right(pos),
+            })
+    }
+
+    fn occupy(&mut self, pos: &GridCoord, cell: Cell) {
+        self.occupied.insert(Position { coord: pos.clone(), cell });
+        self.grid[pos.y][pos.x] = true;
+    }
+
+    fn pour_sand_3(&mut self) -> u32 {
+        let start = GridCoord { x: 500, y: 0 };
+        let mut units = 0;
+        loop {
+            let mut curr_pos = start;
+            while let Some(pos) = self.go(&curr_pos, true) {
+                curr_pos = pos;
+            }
+            self.occupy(&curr_pos, Cell::Sand);
+            units += 1;
+            if curr_pos == start {
+                break;
             }
         }
         units
@@ -260,7 +313,7 @@ fn part_a(input: &str) -> u32 {
 fn part_b(input: &str) -> u32 {
     let open = fs::read_to_string(input.to_string()).expect("Could not read file");
     let mut cave = Cave::parse(open.as_str());
-    let i = cave.pour_sand_2();
+    let i = cave.pour_sand_3();
     // println!("{:?}", cave);
     i
 }
@@ -300,6 +353,15 @@ mod tests {
     fn part_b_test_input() {
         let input = "src/day14/test-input.txt";
         let result = part_b(input);
+        assert_eq!(93, result);
+    }
+
+    #[test]
+    fn pour_sand_3_test() {
+        let input = "src/day14/test-input.txt";
+        let open = fs::read_to_string(input.to_string()).expect("Could not read file");
+        let mut cave = Cave::parse(open.as_str());
+        let result = cave.pour_sand_3();
         assert_eq!(93, result);
     }
 }
