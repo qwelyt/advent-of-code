@@ -377,7 +377,7 @@ fn part_a(input: &str) -> usize {
     tower.let_the_rocks_fall(2022, false);
     // tower.let_the_rocks_fall(1, true);
     // println!("{:?}",tower.chamber);
-    tower.print_history();
+    // tower.print_history();
     tower.let_the_rocks_fall(0, false)
 }
 
