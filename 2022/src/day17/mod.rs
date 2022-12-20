@@ -322,7 +322,7 @@ impl Tower {
         }
         println!();
     }
-    fn print_history(&self) {
+    fn _print_history(&self) {
         println!("Ze history!");
         let max_y = *self.history.keys().max().unwrap_or(&0);
         // for (nr, line) in self.history.iter().enumerate().rev() {
@@ -377,7 +377,7 @@ fn part_a(input: &str) -> usize {
     tower.let_the_rocks_fall(2022, false);
     // tower.let_the_rocks_fall(1, true);
     // println!("{:?}",tower.chamber);
-    // tower.print_history();
+    // tower._print_history();
     tower.let_the_rocks_fall(0, false)
 }
 
