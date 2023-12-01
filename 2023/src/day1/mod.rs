@@ -7,8 +7,10 @@ use crate::util::time;
 pub fn day1() {
     println!("== Day 1 ==");
     let input = "src/day1/input.txt";
-    time(part_a, input, "A");
-    time(part_b, input, "B");
+    time(part_a, input, "A_1");
+    time(part_a_2, input, "A_2");
+    time(part_b, input, "B_1");
+    time(part_b_2, input, "B_2");
 }
 
 fn part_a(input: &str) -> usize {
@@ -106,26 +108,69 @@ fn part_b(input: &str) -> usize {
     numbers.iter().sum()
 }
 
+fn part_a_2(input: &str) -> usize {
+    let open = File::open(input).expect("Could not read file");
+    let mut numbers: Vec<usize> = Vec::new();
+    for line in BufReader::new(open).lines() {
+        let line = line.unwrap();
+        let s: Vec<char> = line.chars().into_iter().filter(|c| c.is_digit(10)).collect();
+        let p: String = [*s.first().unwrap(), *s.last().unwrap()].iter().collect();
+        numbers.push(p.parse::<usize>().unwrap());
+    }
+    numbers.iter().sum()
+}
+
+fn part_b_2(input: &str) -> usize {
+    let open = File::open(input).expect("Could not read file");
+    let mut numbers: Vec<usize> = Vec::new();
+    for line in BufReader::new(open).lines() {
+        let line = line.unwrap();
+        let mut s: Vec<char> = Vec::new();
+        for (i, c) in line.chars().enumerate() {
+            if c.is_digit(10) {
+                s.push(c)
+            }
+            for (n, v) in ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"].iter().enumerate() {
+                if line.split_at(i).1.starts_with(v) {
+                    s.push((n + 1).to_string().chars().last().unwrap())
+                }
+            }
+        }
+        let p: String = [*s.first().unwrap(), *s.last().unwrap()].iter().collect();
+        numbers.push(p.parse::<usize>().unwrap());
+    }
+    numbers.iter().sum()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn part_a_test_input() {
-        assert_eq!(142, part_a("src/day1/test-input.txt"))
+        let input = "src/day1/test-input.txt";
+        time(part_a, input, "A_1");
+        time(part_a_2, input, "A_2");
+        assert_eq!(142, part_a(input));
+        assert_eq!(142, part_a_2(input));
     }
 
     #[test]
     fn real_a() {
-        assert_eq!(54605, part_a("src/day1/input.txt"))
+        assert_eq!(54605, part_a_2("src/day1/input.txt"))
     }
 
     #[test]
     fn part_b_test_input() {
         assert_eq!(281, part_b("src/day1/test-input-b.txt"))
     }
+
     #[test]
     fn real_b() {
-        assert_eq!(55429, part_b("src/day1/input.txt"))
+        let input = "src/day1/input.txt";
+        time(part_b, input, "B_1");
+        time(part_b_2, input, "B_2");
+        assert_eq!(55429, part_b(input));
+        assert_eq!(55429, part_b_2(input));
     }
 }
