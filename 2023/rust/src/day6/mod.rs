@@ -57,7 +57,7 @@ fn part_b(input: &str) -> usize {
             .collect::<String>();
         lines.push(s.parse::<usize>().unwrap());
     }
-    println!("{:?}", lines);
+    // println!("{:?}", lines);
     let time_record = (lines[0], lines[1]);
     num_combinations_to_beat_record(&time_record)
 }
