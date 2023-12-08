@@ -34,7 +34,7 @@ fn part_a(input: &str) -> usize {
         .product()
 }
 
-fn num_combinations_to_beat_record(time_record: &(usize, usize)) -> usize {
+fn _num_combinations_to_beat_record(time_record: &(usize, usize)) -> usize {
     let (time, record) = *time_record;
     let mut sum = 0;
     for i in 0..time {

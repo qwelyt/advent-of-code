@@ -49,7 +49,7 @@ fn part_a(input: &str) -> usize {
     sum
 }
 
-fn hand_score(hand: &Vec<usize>) -> usize {
+fn _hand_score(hand: &Vec<usize>) -> usize {
     // == Best to worst ==
     // 5-of-a-kind  AAAAA == 7, 1 key
     // 4-of-a-kind  AAAAK == 6, 2 keys
@@ -139,7 +139,7 @@ fn part_b(input: &str) -> usize {
     sum
 }
 
-fn hand_score_b(hand: &Vec<usize>) -> usize {
+fn _hand_score_b(hand: &Vec<usize>) -> usize {
     // == Best to worst ==
     // 5-of-a-kind  AAAAA == 7, 1 key
     // 4-of-a-kind  AAAAK == 6, 2 keys
@@ -221,10 +221,10 @@ fn hand_score_b(hand: &Vec<usize>) -> usize {
         };//.iter().map(|i| *i).collect();
 
         // println!("Old hand: {:?}\nNew hand: {:?}", hand, new_hand);
-        return hand_score(&new_hand);
+        return _hand_score(&new_hand);
     }
     // If there is no Joker, rank as normal
-    hand_score(hand)
+    _hand_score(hand)
 }
 
 fn hand_score_b2(hand: &Vec<usize>) -> usize {

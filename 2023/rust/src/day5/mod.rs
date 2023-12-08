@@ -233,7 +233,7 @@ mod tests {
         let open = File::open(input).expect("Could not read file");
         let groups = group_input(open);
         let map = SeedMap::from(&groups);
-        let bf = map.find_min_range_bf();
+        let _bf = map.find_min_range_bf();
         println!();
         let range = map.find_min_range_location();
         assert_eq!(46, range);
