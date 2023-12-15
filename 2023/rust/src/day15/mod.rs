@@ -11,32 +11,30 @@ pub fn day15() {
     time(part_b, input, "B");
 }
 
-fn part_a(input: &str) -> usize {
-    let file = File::open(input).unwrap();
-    BufReader::new(file).lines()
-        .flatten()
-        .map(|l| l.split(",").collect::<Vec<&str>>()
-            .iter()
-            .map(|s| s.chars().collect::<Vec<char>>())
-            .collect::<Vec<Vec<char>>>()
-        )
-        .flatten()
-        .map(|v| hash(&v))
-        .sum()
+fn part_a(input: &str) -> u32 {
+    File::open(input)
+        .map(|file| BufReader::new(file).lines()
+            .flatten()
+            .map(|l| l.split(",").map(hashs).sum::<u32>())
+            .sum()
+        ).unwrap()
 }
 
 fn part_b(input: &str) -> usize {
-    let file = File::open(input).unwrap();
-    let sequences = BufReader::new(file).lines()
-        .flatten()
-        .map(|l| l.split(",").collect::<Vec<&str>>()
-            .iter()
-            .map(|s| s.chars().collect::<Vec<char>>())
-            .collect::<Vec<Vec<char>>>()
+    File::open(input)
+        .map(|f| BufReader::new(f).lines()
+            .flatten()
+            .map(|l| l.split(",").map(|s| s.to_string()).collect::<Vec<String>>())
+            .collect::<Vec<Vec<String>>>()
         )
+        .iter()
         .flatten()
-        .collect::<Vec<Vec<char>>>();
-    focal_power(&sequences)
+        .map(focal_power2)
+        .sum()
+}
+
+fn hashs(s: &str) -> u32 {
+    s.chars().fold(0, |cur, c| ((cur + c as u32) * 17) % 256)
 }
 
 fn hash(chars: &Vec<char>) -> usize {
@@ -51,13 +49,45 @@ fn hash(chars: &Vec<char>) -> usize {
     sum as usize
 }
 
+fn focal_power2(sequences: &Vec<String>) -> usize {
+    let mut boxes: Vec<Vec<(&str, usize)>> = vec![Vec::new(); 256];
+    for s in sequences.iter() {
+        let (label, fp) = if s.ends_with('-') {
+            s.split_at(s.len() - 1)
+        } else {
+            s.split_once("=").unwrap()
+        };
+        // println!("{:?} || {:?}", label, fp);
+        let boks = &mut boxes[hashs(label) as usize];
+        if fp == "-" {
+            match boks.iter().position(|l| l.0 == label) {
+                Some(i) => boks.remove(i),
+                _ => ("", 0)
+            };
+        } else {
+            match boks.iter().position(|l| l.0 == label) {
+                Some(i) => boks[i] = (label, fp.parse::<usize>().unwrap()),
+                None => boks.push((label, fp.parse::<usize>().unwrap()))
+            };
+        }
+    }
+    boxes.into_iter()
+        .enumerate()
+        .map(|(b, lenses)| lenses.iter()
+            .enumerate()
+            .map(|(i, lens)| (b + 1) * (i + 1) * lens.1)
+            .sum::<usize>()
+        )
+        .sum()
+}
+
 #[derive(Debug, Hash, Eq, PartialEq)]
 struct Lens {
     label: String,
     focal_length: usize,
 }
 
-fn focal_power(sequences: &Vec<Vec<char>>) -> usize {
+fn _focal_power(sequences: &Vec<Vec<char>>) -> usize {
     let mut boxes: HashMap<usize, Vec<Lens>> = HashMap::new();
     for v in sequences.iter() {
         // println!("{:?} -{:?} ={:?}", v, v.iter().position(|&c| c == '-'), v.iter().position(|&c| c == '='));
@@ -151,8 +181,10 @@ mod tests {
 
     #[test]
     fn test_hash() {
-        let chars = "HASH".chars().collect::<Vec<char>>();
+        let s = "HASH";
+        let chars = s.chars().collect::<Vec<char>>();
         let result = hash(&chars);
-        assert_eq!(52, result)
+        assert_eq!(52, result);
+        assert_eq!(52, hashs(s));
     }
 }
