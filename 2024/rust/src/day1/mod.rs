@@ -82,7 +82,7 @@ mod tests {
     #[test]
     fn real_b() {
         let input = "src/day1/input.txt";
-        assert_eq!(, part_b(input));
+        assert_eq!(26674158, part_b(input));
     }
 
     #[test]
