@@ -12,6 +12,7 @@ mod day9;
 mod day10;
 mod day11;
 mod day12;
+mod day13;
 
 fn main(){
     util::time_all(|| {
@@ -27,5 +28,6 @@ fn main(){
         day10::solve();
         day11::solve();
         day12::solve();
+        day13::solve();
     })
 }
