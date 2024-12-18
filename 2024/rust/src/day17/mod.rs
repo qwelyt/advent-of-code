@@ -44,6 +44,7 @@ fn part_b(input: &str) -> usize {
     }
 }
 
+#[allow(unused_assignments)]
 fn find(program: &Vec<usize>, ans: usize) -> Option<usize> {
     /* Program: 2,4, 1,1, 7,5, 4,7, 1,4, 0,3, 5,5, 3,0
         (init)a = ???
