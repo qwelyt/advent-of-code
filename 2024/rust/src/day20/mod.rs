@@ -19,7 +19,12 @@ fn part_a(input: &str) -> usize {
         .sum()
 }
 
-fn part_b(input: &str) -> i32 { 0 }
+fn part_b(input: &str) -> usize {
+    p2(input).iter()
+        .filter(|((cost,radius),_)| *cost >= 100+*radius )
+        .map(|((_,_),v)| v)
+        .sum()
+}
 
 fn p1(input: &str) -> HashMap<usize,usize> {
     let (start,end,map,walls) = parse_map(input);
@@ -41,7 +46,7 @@ fn p1(input: &str) -> HashMap<usize,usize> {
     m
 }
 fn p1_smarter(input: &str) -> HashMap<usize,usize> {
-    let (start,end,map,walls) = parse_map(input);
+    let (start,end,map,_walls) = parse_map(input);
     let mut pos = start.unwrap().clone();
     let mut costs = vec![vec![-1; map[0].len()]; map.len()];
     costs[pos.uy()][pos.ux()] = 0;
@@ -84,6 +89,57 @@ fn p1_smarter(input: &str) -> HashMap<usize,usize> {
                 let cost = (i).abs() as usize;
                 // println!("i: {}, cost: {}", i, cost);
                 m.entry(cost).and_modify(|v| *v += 1).or_insert(1);
+            }
+        }
+    }
+    m
+}
+fn p2(input: &str) -> HashMap<(isize,isize),usize> {
+    let (start,end,map,_walls) = parse_map(input);
+    let mut pos = start.unwrap().clone();
+    let mut costs = vec![vec![-1_isize; map[0].len()]; map.len()];
+    costs[pos.uy()][pos.ux()] = 0;
+
+    while pos != end.unwrap() {
+        for npos in [pos+(-1, 0), pos+(1, 0),pos+(0, 1), pos+(0, -1)] {
+            if npos.y < 0
+                || npos.x < 0
+                || npos.uy() >= map.len()
+                || npos.ux() >= map[0].len()
+            { continue; }
+            if map[npos.uy()][npos.ux()] == '#'{ continue; }
+            if costs[npos.uy()][npos.ux()] != -1 { continue; }
+            costs[npos.uy()][npos.ux()] = costs[pos.uy()][pos.ux()] + 1;
+            pos = npos;
+        }
+    }
+    let mut m: HashMap<(isize,isize),usize> = HashMap::new();
+    for y in 0..map.len(){
+        for x in 0..map[y].len(){
+            if map[y][x] == '#'{ continue; }
+            let iy = y as isize;
+            let ix = x as isize;
+            for radius in 2..=20_isize {
+                for ry in 0..=radius {
+                    let rx = radius-ry;
+                    let new_pos = HashSet::from([
+                        (iy+ ry, ix+ rx),
+                        (iy+ ry, ix- rx),
+                        (iy- ry, ix+ rx),
+                        (iy- ry, ix- rx),
+                    ]);
+                    for (ny,nx) in new_pos {
+                        if ny < 0 || nx < 0
+                            || ny as usize >= map.len() || nx as usize >= map[0].len()
+                        { continue; }
+                        if map[ny as usize][nx as usize] == '#'{ continue; }
+
+                        let cost = costs[y][x] - costs[ny as usize][nx as usize];
+                        // println!("i: {}, cost: {}", i, cost);
+                        m.entry((cost,radius)).and_modify(|v| *v += 1).or_insert(1);
+                    }
+
+                }
             }
         }
     }
@@ -259,7 +315,8 @@ mod tests {
     #[test]
     fn real_b() {
         let input = "src/day20/input.txt";
-        assert_eq!(0, part_b(input));
+        let result = part_b(input);
+        assert_eq!(1032257, result);
     }
 
     #[test]
