@@ -30,8 +30,10 @@ struct Linen {
 
 impl Linen {
     fn parse(input: &str) -> Self {
-        let string = read_to_string(input.to_string().to_string()).expect("failed to read input");
-        let (towels_str, pattens_str) = string.split_once("\n\n").unwrap();
+        let string = read_to_string(input.to_string()).expect("failed to read input");
+        let (towels_str, pattens_str) = string.split_once("\n\n")
+            .or_else(|| string.split_once("\r\n"))
+            .unwrap();
         let towels = towels_str
             .split(", ")
             .map(|s| s.to_string())
