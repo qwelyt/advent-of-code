@@ -10,6 +10,24 @@ pub fn solve() {
 }
 
 fn part_a(input: &str) -> u32 {
+    let machines = parse_machines(input);
+    machines
+        .iter()
+        .map(Machine::cheapest_win)
+        .map(|min| min.unwrap_or(0))
+        .sum()
+}
+
+fn part_b(input: &str) -> usize {
+    let machines = parse_machines(input);
+    machines
+        .iter()
+        .map(Machine::cheapest_win_13_0)
+        .map(|min| min.unwrap_or(0))
+        .sum()
+}
+
+fn parse_machines(input: &str) -> Vec<Machine> {
     let lines = File::open(input)
         .map(|f| BufReader::new(f).lines().flatten().collect::<Vec<String>>())
         .unwrap();
@@ -27,15 +45,8 @@ fn part_a(input: &str) -> u32 {
         machines.push(Machine::new(block));
     }
     machines
-        .iter()
-        .map(Machine::cheapest_win)
-        .map(|min| min.unwrap_or(0))
-        .sum()
 }
 
-fn part_b(input: &str) -> i32 {
-    0
-}
 
 #[derive(Debug, Clone, Copy)]
 struct Machine {
@@ -81,14 +92,24 @@ impl Machine {
         // println!("{:?} ::: {:?}", self,min);
         min
     }
-    fn cheapest_win_13_0(&self) -> Some(usize) {
+    fn cheapest_win_13_0(&self) -> Option<usize> {
+        // !!! FOUND SOLUTION !!!
+        // I'm not smart enough to have figured out this by myself. But I did Rustify it from python
         let prize = (
-            self.prize.0 as usize + 10_000_000_000_000,
-            self.prize.1 as usize + 10_000_000_000_000,
+            self.prize.0 as f64 + 10_000_000_000_000f64,
+            self.prize.1 as f64 + 10_000_000_000_000f64,
         );
-        let press_a = (prize.0 * self.b.1 as usize - prize.1 * self.b.0 as usize)
-            / (self.a.0 as usize * self.b.1 as usize - self.a.1 as usize * self.b.0 as usize);
-        // let press_b = prize.0 - self.a.0  * press_a  as usize self.b.o
+        let press_a = (prize.0 * self.b.1 as f64 - prize.1 * self.b.0 as f64)
+            / (self.a.0 as f64 * self.b.1 as f64 - self.a.1 as f64 * self.b.0 as f64);
+        let press_b = (prize.0 - self.a.0 as f64 * press_a) / self.b.0 as f64;
+
+        if press_a % 1.0 == press_b % 1.0  && press_b % 1.0 == 0.0{
+            // println!("Win: {:?}", self);
+            Some((press_a * 3f64 + press_b) as usize)
+        } else {
+            // println!("Loose: {:?}", self);
+            None
+        }
     }
 }
 
@@ -113,7 +134,7 @@ mod tests {
     #[test]
     fn real_b() {
         let input = "src/day13/input.txt";
-        assert_eq!(0, part_b(input));
+        assert_eq!(83232379451012, part_b(input));
     }
 
     #[test]
