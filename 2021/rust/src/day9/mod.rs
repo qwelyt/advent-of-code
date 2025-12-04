@@ -62,25 +62,26 @@ fn part_b(input: &Vec<String>) -> usize {
                 let point = q.pop_front().unwrap();
                 r = point.r;
                 c = point.c;
-                if seen.contains(&point) || point.v == 9 { // I have no idea why we are adding a point with value 9 when we check for it to *not* be that.
+                if seen.contains(&point) {
                     // println!("I've already seen {:?}",point);
                     continue;
                 } else {
                     seen.insert(point);
-                    set.insert(point.clone());
+                    if point.v != 9 {
+                        set.insert(point.clone());
+                    }
                     for i in 0..4 {
                         let rr = r as i32 + *rd.get(i).unwrap();
                         let cc = c as i32 + *cd.get(i).unwrap();
                         // println!("{} ({},{}) -- {:?} - ({},{})",i,r,c,point,rr,cc);
                         if rr >= 0 && rr < rows && cc >= 0 && cc < cols {
-                            let option1 = height_map.get(rr as usize);
-                            if option1.is_some() {
-                                let option = option1.unwrap().get(cc as usize);
-                                if option.is_some() && option.unwrap() != &9 {
-                                    let rc = RC { r: rr as usize, c: cc as usize, v: *option.unwrap() };
-                                    // println!("Found {:?} -- {}",rc,option.unwrap());
-                                    q.push_back(rc);
-                                }
+                            let comp_val = *height_map.get(rr as usize)
+                                .map(|r| r.get(cc as usize).unwrap())
+                                .unwrap_or(&9);
+                            if comp_val != 9 {
+                                let rc = RC { r: rr as usize, c: cc as usize, v: comp_val };
+                                // println!("Found {:?} -- {}",rc,option.unwrap());
+                                q.push_back(rc);
                             }
                         }
                     }
