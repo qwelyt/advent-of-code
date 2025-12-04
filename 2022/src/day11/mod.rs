@@ -1,5 +1,7 @@
 use crate::util::{lines, time, vecs};
 
+mod mod2;
+
 pub fn day11() {
     println!("== Day 11 ==");
     let input = "src/day11/input.txt";
