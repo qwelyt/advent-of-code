@@ -29,7 +29,8 @@ fn part_a(input: &str) -> usize {
     // println!("{:?}", lines);
     // println!("{:?}", time_record);
     time_record.iter()
-        .map(num_combinations_to_beat_record)
+        // .map(num_combinations_to_beat_record)
+        .map(nctbr)
         .product()
 }
 
@@ -46,6 +47,14 @@ fn num_combinations_to_beat_record(time_record: &(usize, usize)) -> usize {
     sum
 }
 
+fn nctbr(time_record: &(usize, usize)) -> usize {
+    let time = time_record.0 as f64;
+    let record = time_record.1 as f64;
+    let min = f64::floor((time - f64::sqrt(time.powf(2f64) - 4f64 * record)) / 2f64 + 1f64);
+    let max = f64::ceil((time + f64::sqrt(time.powf(2f64) - 4f64 * record)) / 2f64 - 1f64);
+    (max - min + 1.0) as usize
+}
+
 
 fn part_b(input: &str) -> usize {
     let open = File::open(input).expect("Could not read file");
@@ -59,7 +68,8 @@ fn part_b(input: &str) -> usize {
     }
     // println!("{:?}", lines);
     let time_record = (lines[0], lines[1]);
-    num_combinations_to_beat_record(&time_record)
+    //num_combinations_to_beat_record(&time_record)
+    nctbr(&time_record)
 }
 
 #[cfg(test)]
