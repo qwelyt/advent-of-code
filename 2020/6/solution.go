@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 func ReadFile(filePath string) []string {
@@ -26,29 +27,33 @@ func ReadFile(filePath string) []string {
 	return values
 }
 
+func reduceToArray(group []string) []string {
+	var tmp []string
+	for _, v := range group {
+		chars := strings.Split(v, "")
+		tmp = append(tmp, chars...)
+	}
+	return tmp
+}
+
 func CountGroupAnyYes(group []string) int {
 	var m = make(map[string]bool)
-	for _, v := range group {
-		for i := 0; i < len(v); i++ {
-			c := string(v[i])
-			_, present := m[c]
-			if !present {
-				m[c] = true
-			}
-		}
+
+	for _, v := range reduceToArray(group) {
+		m[v] = true
 	}
+
 	return len(m)
 }
 
 func CountGroupAllYes(group []string) int {
 	var m = make(map[string]int)
 	var num int
-	for _, v := range group {
-		for i := 0; i < len(v); i++ {
-			c := string(v[i])
-			m[c] = m[c] + 1
-		}
+
+	for _, v := range reduceToArray(group) {
+		m[v] = m[v] + 1
 	}
+
 	for _, v := range m {
 		if v == len(group) {
 			num++
