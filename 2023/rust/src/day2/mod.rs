@@ -7,7 +7,8 @@ use crate::util::time;
 pub fn day2() {
     println!("== Day 2 ==");
     let input = "src/day2/input.txt";
-    time(part_a, input, "A");
+    time(part_a, input, "A_1");
+    time(part_a_2, input, "A_2");
     time(part_b, input, "B");
 }
 
@@ -20,7 +21,6 @@ fn part_a(input: &str) -> usize {
     for line in BufReader::new(open).lines() {
         let line = line.unwrap();
         let split = line.split(": ").collect::<Vec<&str>>();
-        let game_id = split.first().unwrap().split_at("Game ".len()).1.parse::<usize>().unwrap();
         let draws = split.last().unwrap().split("; ").collect::<Vec<&str>>();
         let mut valid = true;
         for draw in draws.iter() {
@@ -42,11 +42,48 @@ fn part_a(input: &str) -> usize {
             }
         }
         if valid {
+            let game_id = split.first().unwrap().split_at("Game ".len()).1.parse::<usize>().unwrap();
             sum += game_id;
         }
         // println!("{}, {}", game_id, valid);
     }
     sum
+}
+
+fn part_a_2(input: &str) -> usize {
+    let open = File::open(input).expect("Could not read file");
+    BufReader::new(open).lines().into_iter()
+        .map(Result::unwrap)
+        //.map(|l| l.replace(";",","))
+        .map(|l| get_game_id(l.as_str()))
+        .filter(Option::is_some)
+        .map(Option::unwrap)
+        .sum()
+}
+
+fn get_game_id(line: &str) -> Option<usize> {
+    let split = line.split(": ").collect::<Vec<&str>>();
+    let over = split.last().iter()
+        .flat_map(|l| l.split([',', ';']))
+        .map(|p| {
+            let sp = p.trim().split(" ").collect::<Vec<&str>>();
+            match *sp.last().unwrap() {
+                "red" => sp.first().map(|s| s.parse::<usize>().unwrap()).filter(|p| *p > 12),
+                "green" => sp.first().map(|s| s.parse::<usize>().unwrap()).filter(|p| *p > 13),
+                "blue" => sp.first().map(|s| s.parse::<usize>().unwrap()).filter(|p| *p > 14),
+                &_ => None
+            }
+        })
+        .filter(Option::is_some)
+        .collect::<Vec<Option<usize>>>();
+
+    if over.is_empty() {
+        return split.first()
+            .map(|s| s.split(" ").last())
+            .flatten()
+            .map(|s| s.parse::<usize>().unwrap())
+    }
+    None
 }
 
 fn part_b(input: &str) -> usize {
@@ -59,7 +96,6 @@ fn part_b(input: &str) -> usize {
 
         let line = line.unwrap();
         let split = line.split(": ").collect::<Vec<&str>>();
-        let game_id = split.first().unwrap().split_at("Game ".len()).1.parse::<usize>().unwrap();
         let draws = split.last().unwrap().split("; ").collect::<Vec<&str>>();
         for draw in draws.iter() {
             let colours = draw.split(", ").collect::<Vec<&str>>();
@@ -93,7 +129,9 @@ mod tests {
     #[test]
     fn part_a_test_input() {
         let result = part_a(TEST_INPUT);
-        assert_eq!(8, result)
+        assert_eq!(8, result);
+        let result = part_a_2(TEST_INPUT);
+        assert_eq!(8, result);
     }
 
     #[test]
