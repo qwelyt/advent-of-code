@@ -78,9 +78,9 @@ impl Sensor {
         let md = self.manhattan_distance as i32;
         if self.position.y - md <= y && self.position.y + md >= y {
             for my in -md..=md {
-                let yabs = my.abs();
                 let sy = self.position.y + my;
                 if sy != y { continue; }
+                let yabs = my.abs();
                 for x in -md + yabs..=md - yabs {
                     let sx = self.position.x + x;
                     coords.push((sx, sy).into());
@@ -162,7 +162,7 @@ impl Cave {
         &Tile::Empty
     }
 
-    fn covered_in_row2(&self, row: i32) -> usize {
+    fn covered_in_row(&self, row: i32) -> usize {
         self.sensors.iter()
             .flat_map(|s| s.cover_area_at_y(row))
             .filter(|p| self.tile(p) == &Tile::Empty)
@@ -222,7 +222,7 @@ fn part_a(input: &str, row: i32) -> usize {
     let open = std::fs::read_to_string(input.to_string()).expect("Could not read file");
     let cave = Cave::parse(open.as_str());
     // println!("{:?}", cave);
-    cave.covered_in_row2(row)
+    cave.covered_in_row(row)
 }
 
 fn part_b(input: &str, search_area: usize, multiplier: usize) -> usize {
