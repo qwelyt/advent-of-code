@@ -125,7 +125,7 @@ impl System {
     }
 
 
-    fn find_path(&self, pos: &ValveId, time: u32, curr_time: u32, opened: HashSet<ValveId>) -> u32 {
+    fn _find_path(&self, pos: &ValveId, time: u32, curr_time: u32, opened: HashSet<ValveId>) -> u32 {
         // println!("pos: {:?}, time: {}, curr_time: {:?}, opened: {:?}", pos, time, curr_time, opened);
         if opened.len() == self.pressurized.len() { // All valves opened
             return 0;
@@ -140,14 +140,14 @@ impl System {
                 let release_pressure = self.valves.get(valve_id).unwrap().flow_rate * (time - release_time);
                 let mut open = opened.clone();
                 open.insert(*valve_id);
-                let sub = self.find_path(valve_id, time, release_time, open);
+                let sub = self._find_path(valve_id, time, release_time, open);
 
                 pressure = max(pressure, release_pressure + sub);
             }
         }
         pressure
     }
-    fn find_path_with_elephant(&self, me_pos: &ValveId, el_pos: &ValveId, time: u32, me_time: u32, el_time: u32, opened: HashSet<ValveId>) -> u32 {
+    fn _find_path_with_elephant(&self, me_pos: &ValveId, el_pos: &ValveId, time: u32, me_time: u32, el_time: u32, opened: HashSet<ValveId>) -> u32 {
         // println!("pos: {:?}, time: {}, curr_time: {:?}, opened: {:?}", pos, time, curr_time, opened);
         if opened.len() == self.pressurized.len() { // All valves opened
             return 0;
@@ -163,7 +163,7 @@ impl System {
                     let release_pressure = self.valves.get(valve_id).unwrap().flow_rate * (time - me_rt);
                     let mut open = opened.clone();
                     open.insert(*valve_id);
-                    let sub = self.find_path_with_elephant(valve_id, el_pos, time, me_rt, el_time, open);
+                    let sub = self._find_path_with_elephant(valve_id, el_pos, time, me_rt, el_time, open);
 
                     pressure = max(pressure, release_pressure + sub);
                 }
@@ -173,7 +173,7 @@ impl System {
                     let release_pressure = self.valves.get(valve_id).unwrap().flow_rate * (time - el_rt);
                     let mut open = opened.clone();
                     open.insert(*valve_id);
-                    let sub = self.find_path_with_elephant(me_pos, valve_id, time, me_time, el_rt, open);
+                    let sub = self._find_path_with_elephant(me_pos, valve_id, time, me_time, el_rt, open);
 
                     pressure = max(pressure, release_pressure + sub);
                 }
@@ -183,12 +183,68 @@ impl System {
         pressure
     }
 
+    fn calc_paths(&self, curr_valve: &ValveId, time_left: u32, visited: HashMap<ValveId, u32>) -> (u32, Option<HashMap<ValveId, u32>>) {
+        if time_left < 1 {
+            return (0, Some(visited))
+        }
+
+        // self.valves.keys()//.iter()
+        self.pressurized.iter()
+            .filter(|target| *target != curr_valve)
+            .filter_map(|target| {
+                let distance = self.paths.get(curr_valve).unwrap().get(target);
+                if distance.is_none() {
+                    println!("No path from {:?} to {:?}", curr_valve, target);
+                    println!("{:?}", self.paths);
+                    panic!();
+                    // return None;
+                }
+                let distance = *distance.unwrap();
+
+                let time_left_after_open = time_left as i32 - distance as i32 - 1;
+                if time_left_after_open < 0 {
+                    return None;
+                }
+                let time_left_after_open = time_left_after_open as u32;
+
+                let flow_rate = self.valves.get(target).unwrap().flow_rate;
+                let valve_value = time_left_after_open * flow_rate;
+                let current_target_value = *visited.get(target).unwrap_or(&0);
+                if valve_value <= current_target_value {
+                    return None
+                }
+                let mut visited = visited.to_owned();
+                visited.insert(*target, valve_value);
+
+                let mut result = self.calc_paths(
+                    target,
+                    time_left_after_open,
+                    visited,
+                );
+
+                result.0 += valve_value - current_target_value;
+                result.1 = result.1.to_owned();
+
+                Some(result)
+            })
+            .max_by(|a, b| a.0.cmp(&b.0))
+            .unwrap_or((0, Some(visited)))
+    }
 
     fn max_release(&self, start: &ValveId, time: u32) -> u32 {
-        self.find_path(start, time, 0, HashSet::new())
+        // self.find_path(start, time, 0, HashSet::new())
+        let x = self.calc_paths(start, time, HashMap::new());
+        x.0
     }
     fn max_release_with_elephant(&self, start: &ValveId, time: u32) -> u32 {
-        self.find_path_with_elephant(start, start, time, 0, 0, HashSet::new())
+        // let valve_values = Vec::with_capacity(self.paths.len());
+        // println!("{:?}", self.pressurized);
+        let x = self.calc_paths(start, time, HashMap::new());
+        // println!("{:?}", x);
+        let y = self.calc_paths(start, time, x.1.unwrap());
+        // println!("{:?}", y);
+        x.0 + y.0
+        // self.find_path_with_elephant(start, start, time, 0, 0, HashSet::new())
     }
 }
 
