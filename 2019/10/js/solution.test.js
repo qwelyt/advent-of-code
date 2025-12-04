@@ -128,3 +128,18 @@ it('Solve A', () => {
   const result = app.solveA(map)
   expect(result).toStrictEqual(expected)
 })
+it.only('Solve B', () => {
+  const map = file
+  const expected = {
+    coord: {
+      x: 20
+      , y: 18
+    }
+    , sees: 280
+  }
+  const result = app.solveB(map, {x:20, y:18})
+  console.log(result)
+  const r = 100*result.x + result.y
+  console.log(r)
+  // expect(result).toStrictEqual(expected)
+})
