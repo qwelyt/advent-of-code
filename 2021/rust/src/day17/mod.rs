@@ -15,8 +15,6 @@ fn part_a(input: &Vec<String>) -> i32 {
     let target: Vec<(char, (i32, i32))> = parse_target(input);
     // println!("{:?}", target);
 
-    let mut pos = (0, 0);
-    let mut vel = (0, 0);
     let steps = i32::abs(target[1].1.0) * i32::abs(target[0].1.1);
     let mut y = 0;
     let mut velocities = Vec::new();
@@ -26,11 +24,11 @@ fn part_a(input: &Vec<String>) -> i32 {
         }
     }
     for test_vel in velocities {
-        pos = (0, 0);
-        vel = test_vel;
+        let mut pos = (0, 0);
+        let mut vel = test_vel;
         // println!("Testing: {:?}", vel);
         let mut ys = Vec::new();
-        for step in 0..steps {
+        for _step in 0..steps {
             pos.0 += vel.0;
             pos.1 += vel.1;
             vel.0 -= 1;
@@ -57,8 +55,6 @@ fn part_a(input: &Vec<String>) -> i32 {
 
 fn part_b(input: &Vec<String>) -> usize {
     let target: Vec<(char, (i32, i32))> = parse_target(input);
-    let mut pos = (0, 0);
-    let mut vel = (0, 0);
     let steps = i32::abs(target[1].1.0) * i32::abs(target[0].1.1);
     let mut velocities = Vec::new();
     for x in 0..=target[0].1.1 {
@@ -68,10 +64,10 @@ fn part_b(input: &Vec<String>) -> usize {
     }
     let mut valid: Vec<(i32, i32)> = Vec::new();
     for test_vel in velocities {
-        pos = (0, 0);
-        vel = test_vel;
+        let mut pos = (0, 0);
+        let mut vel = test_vel;
         // println!("Testing: {:?}", vel);
-        for step in 0..steps {
+        for _step in 0..steps {
             pos.0 += vel.0;
             pos.1 += vel.1;
             vel.0 -= 1;
