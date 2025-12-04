@@ -50,8 +50,8 @@ fn num_combinations_to_beat_record(time_record: &(usize, usize)) -> usize {
 fn nctbr(time_record: &(usize, usize)) -> usize {
     let time = time_record.0 as f64;
     let record = time_record.1 as f64;
-    let min = f64::floor((time - f64::sqrt(time.powf(2f64) - 4f64 * record)) / 2f64 + 1f64);
-    let max = f64::ceil((time + f64::sqrt(time.powf(2f64) - 4f64 * record)) / 2f64 - 1f64);
+    let min = f64::floor((time - f64::sqrt(time.powf(2.0) - 4.0 * record)) / 2.0 + 1.0);
+    let max = f64::ceil((time + f64::sqrt(time.powf(2.0) - 4.0 * record)) / 2.0 - 1.0);
     (max - min + 1.0) as usize
 }
 
