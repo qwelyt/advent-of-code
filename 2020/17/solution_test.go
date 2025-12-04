@@ -16,6 +16,18 @@ func TestPartA(t *testing.T) {
 	}
 }
 
+func TestPartB(t *testing.T) {
+	input := ReadFile("example.txt")
+	input4d := AddDimension(input)
+	end := RunSequence4d(input4d, 6, StateCheck4d)
+	result := CountActive4d(end, "#")
+	expected := 848
+
+	if expected != result {
+		t.Errorf("Expected: %d, got %d", expected, result)
+	}
+}
+
 func TestStateCheck(t *testing.T) {
 	var state = [][][]string{
 		{ // z = 0
