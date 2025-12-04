@@ -23,23 +23,25 @@ fn part_a(input: &Vec<String>) -> i32 {
 }
 
 fn part_b(input: &Vec<String>) -> i32 {
-    let split: Vec<&str> = input.get(0).map(|s| s.split(",").collect()).unwrap();
-    let mut positions: Vec<i32> = split.iter().map(|s| s.parse::<i32>().unwrap()).collect();
-    positions.sort();
+    let positions: Vec<i32> = input.get(0)
+        .map(|s| s.split(",").collect())
+        .unwrap()
+        .iter()
+        .map(|s| s.parse::<i32>().unwrap())
+        .collect();
+
     let mut fuel = i32::MAX;
 
-    let biggest_position = *positions.iter().max().unwrap();
-    for calculate_for_position in 0..biggest_position {
+    for aim_here in *positions.iter().min().unwrap()..*positions.iter().max().unwrap() {
         let mut cost = 0;
         for pos in &positions {
-            let distance = (*pos - calculate_for_position).abs();
+            let distance = (*pos - aim_here).abs();
             cost += fuel_cost(distance);
         }
         if cost < fuel {
             fuel = cost;
         }
     }
-
 
     fuel
 }
