@@ -34,30 +34,21 @@ func ReadFile(filePath string) []string {
 	return values
 }
 
-func FindPath(treeMap []string, open string, tree string, right int, down int) Path {
-	x := 0
-	y := 0
-
+func FindPath(rows []string, open string, tree string, right int, down int) Path {
 	var steps, opens, trees int
 
-	for checkY := y + down; checkY < len(treeMap); checkY += down {
-		checkX := x + right
-		row := treeMap[checkY]
-		if checkX >= len(row) {
-			checkX = checkX - len(row)
-			x -= len(row)
-		}
-		pos := string(row[checkX])
-		if pos == tree {
+	for y, x := down, 0; y < len(rows); y += down {
+		row := rows[y]
+		x = (x + right) % len(row)
+		sign := string(row[x])
+		switch sign {
+		case tree:
 			trees++
-		} else {
+		case open:
 			opens++
 		}
 		steps++
-		x += right
-		y += down
 	}
-
 	return Path{steps, opens, trees}
 }
 
