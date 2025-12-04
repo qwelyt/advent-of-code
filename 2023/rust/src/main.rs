@@ -22,6 +22,7 @@ mod day16;
 mod day17;
 mod day18;
 mod day19;
+mod day20;
 
 fn main() {
     time_all(|| {
@@ -44,5 +45,6 @@ fn main() {
         day17::day17();
         day18::day18();
         day19::day19();
+        day20::day20();
     });
 }
