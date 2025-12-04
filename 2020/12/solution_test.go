@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestTravel(t *testing.T) {
 	input := ReadFile("example.txt")
@@ -8,7 +11,7 @@ func TestTravel(t *testing.T) {
 	rNS, rEW := Travel(input)
 
 	if expectedEW != rEW || expectedNS != rNS {
-		t.Errorf("Expecter (%d,%d), got (%d,%d)", expectedNS, expectedEW, rNS, rEW)
+		t.Errorf("Expected (%d,%d), got (%d,%d)", expectedNS, expectedEW, rNS, rEW)
 	}
 }
 
@@ -23,17 +26,17 @@ func TestOwnTravel(t *testing.T) {
 	eNS, eEW := 1, 7
 	rNS, rEW := Travel(input)
 	if eEW != rEW || eNS != rNS {
-		t.Errorf("Expecter (%d,%d), got (%d,%d)", eNS, eEW, rNS, rEW)
+		t.Errorf("Expected (%d,%d), got (%d,%d)", eNS, eEW, rNS, rEW)
 	}
 }
 
 func TestWPTravel(t *testing.T) {
 	input := ReadFile("example.txt")
-	expectedNS, expectedEW := 72, 214
-	rNS, rEW := WaypointTravel(input)
+	expected := Position{72, 214}
+	result := WPTravel(input)
 
-	if expectedEW != rEW || expectedNS != rNS {
-		t.Errorf("Expecter (%d,%d), got (%d,%d)", expectedNS, expectedEW, rNS, rEW)
+	if !reflect.DeepEqual(expected, result) {
+		t.Errorf("Expected %v, got %v", expected, result)
 	}
 }
 
@@ -47,10 +50,10 @@ func TestOwnWPTravel(t *testing.T) {
 		{"L", 270}, // 270%90 == 3 -> wp1,wp2 == 2,3 == S,W
 		{"F", 3},   // EW == 71, NS == 3
 	}
-	eNS, eEW := 3, 71
-	rNS, rEW := WaypointTravel(input)
-	if eEW != rEW || eNS != rNS {
-		t.Errorf("Expecter (%d,%d), got (%d,%d)", eNS, eEW, rNS, rEW)
+	expected := Position{3, 71}
+	result := WPTravel(input)
+	if !reflect.DeepEqual(expected, result) {
+		t.Errorf("Expected %v, got %v", expected, result)
 	}
 }
 
@@ -61,10 +64,10 @@ func TestOwnWPTravel2(t *testing.T) {
 		{"S", 2},  // wp1d == 1, wp2d == 10
 		{"F", 10}, // NS == 10, EW == 100
 	}
-	eNS, eEW := 10, 100
-	rNS, rEW := WaypointTravel(input)
-	if eEW != rEW || eNS != rNS {
-		t.Errorf("Expecter (%d,%d), got (%d,%d)", eNS, eEW, rNS, rEW)
+	expected := Position{10, 100}
+	result := WPTravel(input)
+	if !reflect.DeepEqual(expected, result) {
+		t.Errorf("Expected %v, got %v", expected, result)
 	}
 }
 
@@ -77,10 +80,10 @@ func TestOwnWPTravel3(t *testing.T) {
 		{"W", 20}, // wp1d == 1, wpd2d == -10
 		{"F", 10}, // NS == 20, EW == 0
 	}
-	eNS, eEW := 20, 0
-	rNS, rEW := WaypointTravel(input)
-	if eEW != rEW || eNS != rNS {
-		t.Errorf("Expecter (%d,%d), got (%d,%d)", eNS, eEW, rNS, rEW)
+	expected := Position{20, 0}
+	result := WPTravel(input)
+	if !reflect.DeepEqual(expected, result) {
+		t.Errorf("Expected %v, got %v", expected, result)
 	}
 }
 
@@ -103,9 +106,36 @@ func TestOwnWPTravel4(t *testing.T) {
 		{"E", 2},  // wp1d == 0, wp2d == 1
 		{"F", 38}, // NS == 107, EW == 1293
 	}
-	eNS, eEW := 107, 1293
-	rNS, rEW := WaypointTravel(input)
-	if eEW != rEW || eNS != rNS {
-		t.Errorf("Expecter (%d,%d), got (%d,%d)", eNS, eEW, rNS, rEW)
+	expected := Position{107, 1293}
+	result := WPTravel(input)
+	if !reflect.DeepEqual(expected, result) {
+		t.Errorf("Expected %v, got %v", expected, result)
+	}
+}
+
+func TestOwnWPTravel5(t *testing.T) {
+	input := []Instruction{
+		// pos{0,0} wp{-1,10}
+		{"S", 1},   // pos{0,0} wp{0,10}
+		{"F", 10},  // pos{0,100} wp{0,10}
+		{"R", 90},  // pos{0,100} wp{10,-0}
+		{"F", 2},   // pos{20,100} wp{10,-0}
+		{"N", 1},   // pos{20,100} wp{9,-0}
+		{"W", 2},   // pos{20,100} wp{9,-2}
+		{"F", 5},   // pos{65,90} wp{9,-2}
+		{"E", 10},  // pos{65,90} wp{9,8}
+		{"F", 10},  // pos{155,170} wp{9,8}
+		{"L", 90},  // pos{155,170} wp{-8,9}
+		{"F", 3},   // pos{131,197} wp{-8,9}
+		{"L", 180}, // pos{131,197} wp{8,-9}
+		{"F", 6},   // pos{179,143} wp{8,-9}
+		{"L", 270}, // pos{179,143} wp{-9, -8}
+		{"F", 2},   // pos{161, 127} wp{-9,-8}
+	}
+	expected := Position{161, 127}
+	result := WPTravel(input)
+
+	if !reflect.DeepEqual(expected, result) {
+		t.Errorf("Expected %v, got %v", expected, result)
 	}
 }
