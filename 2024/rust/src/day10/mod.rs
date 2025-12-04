@@ -98,7 +98,7 @@ fn rate_starts(map: &Vec<Vec<u32>>, start: (i32, i32)) -> usize {
 
             if visited.contains_key(&new_pos){
                 let x = visited.get(&pos).unwrap().clone();
-                visited.entry(new_pos).and_modify(|mut e| *e += x);
+                visited.entry(new_pos).and_modify(|e| *e += x);
                 continue;
             }
             let x = visited.get(&pos).unwrap().clone();
