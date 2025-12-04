@@ -13,7 +13,7 @@ pub fn solve() {
 fn part_a(input: &str) -> usize {
     let map = map(input);
     let antennas = antennas(&map);
-    println!("{:?}", antennas);
+    // println!("{:?}", antennas);
 
     let mut antinodes = HashSet::new();
     for nodes in antennas.values() {
