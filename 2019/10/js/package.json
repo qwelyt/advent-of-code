@@ -1,0 +1,14 @@
+{
+  "name": "js",
+  "version": "1.0.0",
+  "main": "solution.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "jest": "^24.9.0"
+  }
+}
