@@ -69,7 +69,7 @@ func CreateAllFloating(runes []rune) []string {
 	var addrs []string
 	var mine string
 	for i, v := range runes {
-		if string(v) == "X" {
+		if v == 'X' {
 			if len(runes[i+1:]) == 0 {
 				zero := mine + string("0")
 				one := mine + string("1")
@@ -86,6 +86,9 @@ func CreateAllFloating(runes []rune) []string {
 			}
 		} else {
 			mine += string(v)
+		}
+		if len(runes[i+1:]) == 0 {
+			addrs = append(addrs, mine)
 		}
 
 	}

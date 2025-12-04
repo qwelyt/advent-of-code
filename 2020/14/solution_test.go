@@ -56,13 +56,35 @@ func TestBMoreMasks(t *testing.T) {
 	}
 }
 
+func TestBMasks(t *testing.T) {
+	value := "6"
+	for i := 0; i < 36; i++ {
+		mask := make([]rune, 36)
+		for i := range mask {
+			mask[i] = '0'
+		}
+		mask[i] = 'X'
+		result := ApplyMemMask(value, mask)
+		if len(result) != 2 {
+			t.Errorf("Should have produced two mask for mask: %v\n but got %v", mask, result)
+
+		}
+	}
+}
+
+func TestRunA(t *testing.T) {
+	input := ReadFile("input.txt")
+	ans := PartA(input)
+	if ans != 10452688630537 {
+		t.Errorf("Part A broke. Got %d", ans)
+	}
+
+}
+
 func TestRunB(t *testing.T) {
 	input := ReadFile("input.txt")
 	ans := PartB(input)
-	// 703552866308
-	// 697647875308
-	if ans <= 703552866308 {
-		t.Errorf("Answer is too low: %d", ans)
+	if ans != 2881082759597 {
+		t.Errorf("Part B broke. Got %d", ans)
 	}
-	t.Errorf("Ans: %d", ans)
 }
