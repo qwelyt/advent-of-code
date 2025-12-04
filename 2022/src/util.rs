@@ -5,7 +5,24 @@ use std::path::Path;
 pub fn lines(filename: impl AsRef<Path>) -> Vec<String> {
     let open = File::open(filename).expect("Could not read file");
     let lines: Result<Vec<String>> = BufReader::new(open).lines().collect();
-    return lines.expect("Could not read file")
+    return lines.expect("Could not read file");
+}
+
+pub fn lines_as_i32(filename: impl AsRef<Path>) -> Vec<Option<i32>> {
+    let open = File::open(filename).expect("Could not read file");
+    let a: Vec<Option<i32>> = BufReader::new(open)
+        .lines()
+        .into_iter()
+        .map(|l| l.unwrap())
+        .map(|l| {
+            if l.is_empty() {
+                None
+            } else {
+                Some(l.parse::<i32>().unwrap())
+            }
+        })
+        .collect();
+    return a
 }
 
 pub fn vecs(lines: &Vec<String>) -> Vec<Vec<String>> {
@@ -18,6 +35,21 @@ pub fn vecs(lines: &Vec<String>) -> Vec<Vec<String>> {
             continue;
         } else {
             w.push(line.to_string());
+        }
+    }
+    v.push(w);
+    v
+}
+
+pub fn vecs_i32(numbers: &Vec<Option<i32>>) -> Vec<Vec<i32>> {
+    let mut v: Vec<Vec<i32>> = Vec::new();
+    let mut w = Vec::new();
+    for n in numbers.iter() {
+        if n.is_none() {
+            v.push(w);
+            w = Vec::new();
+        } else {
+            w.push(n.unwrap());
         }
     }
     v.push(w);
@@ -40,7 +72,7 @@ pub fn c_to_i32(char: &char) -> i32 {
     char.to_digit(10).unwrap() as i32
 }
 
-pub fn i32_to_string(input: Vec<i32>) -> String{
+pub fn i32_to_string(input: Vec<i32>) -> String {
     input.iter()
         .map(|i| i.to_string())
         .collect::<String>()
@@ -52,8 +84,32 @@ mod tests {
 
     #[test]
     fn lines_test() {
-        let lines: Vec<String> = lines(".gitignore");
-        assert_eq!(vec!["/target"], lines);
+        let lines: Vec<String> = lines("test-resources/string-input.txt");
+        let expected = vec![
+            "Hello",
+            "This",
+            "is",
+            "a",
+            "some",
+            "",
+            "lines",
+        ];
+        assert_eq!(expected, lines);
+    }
+
+    #[test]
+    fn lines_as_i32_test() {
+        let lines = lines_as_i32("test-resources/i32-input.txt");
+        let expected = vec![
+            Some(8),
+            Some(92342),
+            None,
+            Some(34),
+            Some(2),
+            None,
+            Some(3),
+        ];
+        assert_eq!(expected, lines);
     }
 
     #[test]
@@ -77,11 +133,10 @@ mod tests {
         assert_eq!(vec![2, 9], nr)
     }
 
-        #[test]
-    fn to_string(){
-        let inp: Vec<i32> = vec![12,33,29,9];
+    #[test]
+    fn to_string() {
+        let inp: Vec<i32> = vec![12, 33, 29, 9];
         let result = i32_to_string(inp);
         assert_eq!("1233299", result);
     }
-
 }
