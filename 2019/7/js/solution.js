@@ -1,9 +1,3 @@
-// input: [codes] [phaseSettings]
-// Run the codes for each phase
-// The first input in each phase is the phaseSetting
-// The secon input in each phase is the previouse phases output, 0 for the first phase
-// Answer is the output from the last phase
-
 const computer = require("./intcode-computer.js")
 
 function run(codes, phaseSettings){
@@ -14,7 +8,6 @@ function run(codes, phaseSettings){
     previousOutput = out
     outputs.push(out)
   }
-
   return previousOutput
 }
 
@@ -74,7 +67,6 @@ function generateValues(codes, settings, f){
     values: valueObject
     , max: max
   }
-
 }
 
 function solveA(codes){
