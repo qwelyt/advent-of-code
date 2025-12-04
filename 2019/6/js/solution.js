@@ -14,7 +14,19 @@ const mapArr = arr => reduceObjArr(arr.map(a => splitObjects(a))
 	                                  .map(a => objectify(a))
 	                                  .map(a => removeUndefined(a))
 	                              )
+const difference = (a,b) => {
+	bSet = new Set(b)
+	return a.filter(x => !bSet.has(x))
+}
 
+const symmetricDifference = (a,b) => difference(a,b).concat(difference(b,a))
+
+function path(obj, key, p){
+	const v = obj[key]
+	if(v == undefined) return p
+	p.push(v)
+	return path(obj, v, p)
+}
 function count(obj, key, i){
 	const v = obj[key]
 	if(v == undefined) return i
@@ -22,18 +34,32 @@ function count(obj, key, i){
 }
 
 function countPaths(obj){
-	let counter = 0
-	let pathsForKey = {}
+	//let counter = 0
+	let paths = []
+	//let pathsForKey = {}
 	for(k in obj){
 		if(!obj.hasOwnProperty(k)) continue
 
-		const c = count(obj, k, 0)
-		pathsForKey[k] = c
-		counter += c
+		const p = path(obj, k, [])
+		//const c = count(obj, k, 0)
+		//pathsForKey[k] = c
+		//counter += c
+		paths = paths.concat(p)
 
 	}
 	//console.log("Paths for keys:\n",pathsForKey)
-	return counter
+	console.log(counter, paths.length)
+	return paths.length
+}
+
+function findPath(obj, from, to){
+	const p = path(obj, from, [])
+	const s = path(obj, to, [])
+	//console.log(p)
+	//console.log(s)
+	const ps = symmetricDifference(p,s)
+	//console.log(ps)
+	return ps.length
 }
 
 function solveA(input){
@@ -42,6 +68,13 @@ function solveA(input){
 	return countPaths(obj)
 }
 
+function solveB(input, from, to){
+	const arr = input.split("\n")
+	const obj = mapArr(arr)
+	return findPath(obj, from, to)
+}
+
 module.exports = {
 	solveA: solveA
+	, solveB: solveB
 }
