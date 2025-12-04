@@ -27,14 +27,36 @@ fn part_a(input: &str) -> usize {
 }
 
 fn part_b(input: &str) -> usize {
+    solve_b(input, "rx")
+}
+
+fn solve_b(input: &str, exit: &str) -> usize {
     let modules = get_modules(input);
-    let paths = paths_to("rx", &modules);
-    let mut presses = Vec::new();
-    for path in paths.iter() {
-        let x = path.last().unwrap();
-        presses.push(presses_for(x, &modules))
+    // _print_modules(&modules);
+    let exit_parent = modules.values()
+        .filter(|m| m.output.contains(&exit.to_string()))
+        .collect::<Vec<&Module>>();
+    println!("{:?}", exit_parent);
+
+    let mut cycle_lenghts = Vec::new();
+    for parent in exit_parent.iter() {
+        let cls = find_cycle_lengths(parent.name.as_str(), &modules);
+        cls.iter().for_each(|c| cycle_lenghts.push(*c));
     }
-    presses.into_iter().reduce(|a, b| lcm(a, b)).unwrap()
+
+    cycle_lenghts.into_iter().reduce(|a, b| lcm(a, b)).unwrap()
+
+    // let mut presses = Vec::new();
+    // // for parent in exit_parent.iter(){
+    // //     presses.push(presses_for(parent.name.as_str(),"button", "broadcaster",  &modules))
+    // // }
+    //
+    // // let relevant_modules = relevant_modules(exit, &modules);
+    // // for module in relevant_modules.iter() {
+    // //     presses.push(presses_for(module, &modules))
+    // // }
+    // println!("{:?}",presses);
+    // presses.into_iter().reduce(|a, b| lcm(a, b)).unwrap()
 }
 
 fn lcm(a: usize, b: usize) -> usize {
@@ -191,21 +213,57 @@ fn get_modules(input: &str) -> HashMap<String, Module> {
     modules
 }
 
-fn paths_to(module: &str, modules: &HashMap<String, Module>) -> Vec<Vec<String>> {
-    let mut paths = Vec::new();
-    let goal = modules.get(module).unwrap();
-    for m in goal.memory.keys() {
-        let mut path = Vec::new();
-        if m == "broadcaster" {
-            paths.push(path);
+fn relevant_modules(module: &str, modules: &HashMap<String, Module>) -> Vec<String> {
+    let mut goal = modules.get(module);
+    if goal.is_none() {
+        for m in modules.values() {
+            if m.output.contains(&module.to_string()) {
+                goal = Some(m);
+                break;
+            }
         }
     }
-
-    paths
+    let goal = goal.unwrap();
+    goal.memory.keys().map(|k| k.clone()).collect()
 }
 
-fn presses_for(module: &str, modules: &HashMap<String, Module>) -> usize {
-    0
+
+fn find_cycle_lengths(target: &str, orig_modules: &HashMap<String, Module>) -> Vec<usize> {
+    let relevant_modules = relevant_modules(target, orig_modules);
+
+    let mut modules = orig_modules.clone();
+    let mut pulses = VecDeque::new();
+
+    let mut seen = HashMap::new();
+    let mut cycle_lenghts = HashMap::new();
+    for presses in 1.. {
+        pulses.push_back(Pulse::of("button", "broadcaster", false));
+        while let Some(pulse) = pulses.pop_front() {
+            if pulse.destination == target && pulse.high {
+                *seen.entry(pulse.source.clone()).or_insert(0) += 1;
+                if !cycle_lenghts.contains_key(pulse.source.as_str()) {
+                    cycle_lenghts.insert(pulse.source.clone(), presses);
+                } else {
+                    if presses != seen.get(pulse.source.as_str()).unwrap() * cycle_lenghts.get(pulse.source.as_str()).unwrap() {
+                        panic!("If we see the same module again but out of cycle then we have huge problems!")
+                    }
+                }
+                if relevant_modules.iter().all(|m| seen.contains_key(m.as_str())) {
+                    // println!("{:?}", relevant_modules);
+                    // println!("{:?}", seen);
+                    // println!("{:?}", cycle_lenghts);
+                    return cycle_lenghts.iter().map(|(_k, v)| *v as usize).collect();
+                }
+            }
+
+            if let Some(destination) = modules.get_mut(pulse.destination.as_str()) {
+                destination.pulse(pulse.source.as_str(), pulse.high)
+                    .into_iter()
+                    .for_each(|p| pulses.push_back(p));
+            }
+        }
+    }
+    vec![]
 }
 
 
@@ -230,7 +288,7 @@ mod tests {
     #[test]
     fn real_b() {
         let input = "src/day20/input.txt";
-        assert_eq!(0, part_b(input));
+        assert_eq!(238593356738827, part_b(input));
     }
 
     #[test]
@@ -243,7 +301,7 @@ mod tests {
     #[test]
     fn part_b_test_input() {
         let input = "src/day20/test-input.txt";
-        let result = part_b(input);
+        let result = solve_b(input, "output");
         assert_eq!(0, result);
     }
 }
