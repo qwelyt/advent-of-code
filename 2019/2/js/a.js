@@ -1,4 +1,4 @@
-const operand = (arr,i,offset) => arr[arr[i+offset]]; // Only fetches location
+const operand = (arr,i,offset) => arr[arr[i+offset]];
 
 function process(inputArr){
   let arr = [].concat(inputArr);
