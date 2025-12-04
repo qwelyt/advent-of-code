@@ -48,37 +48,24 @@ func BootLoop(input []string) (int, map[int]bool, []int, bool) {
 		if alreadyDone := visited[i]; alreadyDone {
 			return acc, visited, steps, false
 		}
-		row := strings.Split(input[i], " ")
-		op := row[0]
 		visited[i] = true
-		switch op {
+		row := strings.Split(input[i], " ")
+		switch row[0] {
 		case "nop":
 			i++
 		case "acc":
-			sign := string(row[1][0])
-			value, err := strconv.Atoi(row[1][1:len(row[1])])
+			value, err := strconv.Atoi(row[1])
 			if err != nil {
-				fmt.Printf("Could not convert: %v", row[1])
+				log.Fatal(err)
 			}
-			switch sign {
-			case "+":
-				acc += value
-			case "-":
-				acc -= value
-			}
+			acc += value
 			i++
 		case "jmp":
-			sign := string(row[1][0])
-			value, err := strconv.Atoi(row[1][1:len(row[1])])
+			value, err := strconv.Atoi(row[1])
 			if err != nil {
-				fmt.Printf("Could not convert: %v", row[1])
+				log.Fatal(err)
 			}
-			switch sign {
-			case "+":
-				i += value
-			case "-":
-				i -= value
-			}
+			i += value
 		}
 	}
 
@@ -105,6 +92,8 @@ func BruteForceSequence(input []string) (int, int, []int) {
 			newInput = append(newInput, input[i+1:]...)
 			a, visited, steps, reachedEnd := BootLoop(newInput)
 			if reachedEnd {
+				// We could just return here, but doing an exhaustive
+				// search seems like a nice way to catch bugs.
 				seq := Sequence{a, i, steps, visited}
 				m = append(m, seq)
 			}
