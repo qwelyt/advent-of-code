@@ -1,6 +1,14 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader, Result};
 use std::path::Path;
+use std::time::Instant;
+
+pub fn time(f: fn(&str) -> i32, input: &str, part: &str) {
+    let start = Instant::now();
+    let result = f(input);
+    let end = Instant::now();
+    println!("Part {}: {}, took {}ns", part, result, end.duration_since(start).as_nanos())
+}
 
 pub fn lines(filename: impl AsRef<Path>) -> Vec<String> {
     let open = File::open(filename).expect("Could not read file");
