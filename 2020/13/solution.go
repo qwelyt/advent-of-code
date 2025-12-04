@@ -88,27 +88,16 @@ func Earliest(m map[int]int, arrival int) (int, int) {
 }
 
 func Timestamp(buses []Bus) int {
-	var lowest, highest int
-	for _, k := range buses {
-		if lowest == 0 || k.offset < lowest {
-			lowest = k.offset
+	var time, step = 0, 1
+	for _, bus := range buses {
+		// Keep adding time until we reach a place where the
+		// id of the bus fits int the time+bus.offset
+		for (time+bus.offset)%bus.id != 0 {
+			time += step
 		}
-		if highest == 0 || k.offset > highest {
-			highest = k.offset
-		}
+		step *= bus.id
 	}
-	for i := highest * lowest; ; i += lowest {
-		b := true
-		for _, v := range buses {
-			if (i+v.offset)%v.id != 0 {
-				b = false
-			}
-		}
-		if b {
-			return i
-		}
-	}
-	return 0
+	return time
 }
 
 func main() {
@@ -123,6 +112,6 @@ func main() {
 	{
 		bus := BusArr(input.buses)
 		timestamp := Timestamp(bus)
-		fmt.Printf("=== Part B ===\nTimestamp: %d", timestamp)
+		fmt.Printf("=== Part B ===\nTimestamp: %d\n", timestamp)
 	}
 }
