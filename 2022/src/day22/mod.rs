@@ -1,3 +1,5 @@
+#![allow(dead_code, unused, warnings)]
+
 use std::cmp::max;
 
 use crate::util::time;
