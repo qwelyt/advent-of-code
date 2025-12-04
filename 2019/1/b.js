@@ -29,10 +29,10 @@ const massFuelRequirement = mass => {
   return f + massFuelRequirement(f);
 }
 
-console.log(massFuelRequirement(12)); // 2
-console.log(massFuelRequirement(14)); // 2
-console.log(massFuelRequirement(1969)); // 966
-console.log(massFuelRequirement(100756)); // 50346
+// console.log(massFuelRequirement(12)); // 2
+// console.log(massFuelRequirement(14)); // 2
+// console.log(massFuelRequirement(1969)); // 966
+// console.log(massFuelRequirement(100756)); // 50346
 
 const fuelNeeded = lines.map(massFuelRequirement).reduce((acc,curr) => acc+curr);
 console.log(fuelNeeded);
