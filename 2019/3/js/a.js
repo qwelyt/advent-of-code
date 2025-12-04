@@ -47,12 +47,52 @@ function solve(input){
   const sets = threads.map(map => new Set(map.keys()))
   const intersect = intersection(sets[0], sets[1])
   const sum = intersect.map(o => Math.abs(o.x) + Math.abs(o.y))
-  return Math.min(...sum);
+
+  const w = threads.map(m => {
+    const ks = Array.from(m.keys());
+    const keyMap = new Map();
+    ks.map(k => keyMap.set(JSON.stringify(k), k))
+
+    const s = intersect.map(i => JSON.stringify(i))
+    const keys = s.map(_s => keyMap.get(_s))
+    return keys.map(k => {return {key: k, value : m.get(k)}})
+  })
+  // w.map(v => console.log(v))
+  const mark = new Map();
+  for(o of w){
+    for(i of o){
+      // console.log(i);
+      // console.log(i.value);
+      const key = JSON.stringify(i.key);
+      let v = [];
+      // console.log(mark.has(key))
+      if(mark.has(key)){
+        let storedValue = mark.get(key);
+        // console.log(storedValue)
+        v= v.concat(storedValue)
+        // console.log(v)
+      }
+      // console.log(v)
+      v.push(i.value)
+      // console.log(v);
+      mark.set(key, v);
+    }
+  }
+  // console.log(mark)
+  const sumOfSteps = Array.from(mark.values()).map(m => m.reduce((a,c) => a+c));
+  // console.log(sumOfSteps);
+  // console.log(Math.min(...sumOfSteps))
+
+  const result = {
+    distance: Math.min(...sum)
+    , steps: Math.min(...sumOfSteps)
+  };
+  return result;
 }
 
-// const input = "R75,D30,R83,U83,L12,D49,R71,U7,L72\nU62,R66,U55,R34,D71,R55,D58,R83";
+const input = "R75,D30,R83,U83,L12,D49,R71,U7,L72\nU62,R66,U55,R34,D71,R55,D58,R83";
 // const expected = 159;
-// const result = solve(input);
+const result = solve(input);
 
 // console.log("Result: ", result);
 // console.log("Success: ", expected == result);
