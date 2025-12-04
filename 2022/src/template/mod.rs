@@ -1,10 +1,10 @@
-use crate::util::lines;
+use crate::util::time;
 
 pub fn day___() {
     println!("== Day ___ ==");
     let input = "src/day___/input.txt";
-    println!("Part A: {}", part_a(input));
-    println!("Part B: {}", part_b(input));
+    time(part_a, input, "A");
+    time(part_b, input, "B");
 }
 
 fn part_a(input: &str) -> i32 { 0 }
@@ -14,6 +14,26 @@ fn part_b(input: &str) -> i32 { 0 }
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[ignore]
+    #[test]
+    fn runday() {
+        day___();
+    }
+
+    #[ignore]
+    #[test]
+    fn real_a() {
+        let input = "src/day___/input.txt";
+        assert_eq!(0, part_a(input));
+    }
+
+    #[ignore]
+    #[test]
+    fn real_b() {
+        let input = "src/day___/input.txt";
+        assert_eq!(0, part_b(input));
+    }
 
     #[test]
     fn part_a_test_input() {
