@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strconv"
 )
 
@@ -32,33 +33,31 @@ func ReadFile(filePath string) []int {
 	return values
 }
 
-func PossibleValues(numbers []int) map[int]bool {
-	m := make(map[int]bool)
-	for _, i := range numbers {
-		for _, j := range numbers {
-			m[i+j] = true
+func Find(numbers []int, goal int) bool {
+	var m = make(map[int]bool)
+	for _, v := range numbers {
+		m[v] = true
+	}
+	for _, v := range numbers {
+		if m[goal-v] {
+			return true
 		}
 	}
-	return m
+	return false
 }
 
 func FindInvalidXMAS(input []int, preamble int) (int, int, []int) {
-	var position, value int
-
 	previous := input[:preamble]
-
-	for i := preamble + 1; i < len(input); i++ {
+	for i := preamble; i < len(input); i++ {
 		number := input[i]
-		possibleValues := PossibleValues(previous)
-		if !possibleValues[number] {
+		if !Find(previous, number) {
 			return number, i, previous
 		}
 		previous = nil
 		previous = input[i-preamble : i+1]
-
 	}
 
-	return value, position, previous
+	return 0, 0, previous
 }
 
 func Sum(numbers []int) int {
@@ -69,42 +68,55 @@ func Sum(numbers []int) int {
 	return sum
 }
 
-func SumToNumber(numbers []int, goal int) []int {
-	var list []int
+func SumToNumber(numbers []int, goal int) ([]int, bool) {
 	for i := 0; i < len(numbers); i++ {
-		for j := 0; j < len(numbers); j++ {
-			if i >= j {
-				continue
-			}
+		for j := i + 1; j < len(numbers); j++ {
 			var tmp = numbers[i:j]
 			sum := Sum(tmp)
 			if sum == goal {
-				return tmp
+				return tmp, true
 			}
 		}
 	}
-
-	return list
+	return []int{}, false
 }
 
 func LowHigh(numbers []int) (int, int) {
-	var low, high = 1000000000000, 0
-	for _, v := range numbers {
-		if v < low {
-			low = v
-		} else if v > high {
-			high = v
-		}
-	}
-	return low, high
+	sort.Ints(numbers)
+	return numbers[0], numbers[len(numbers)-1]
 }
 
-func main() {
+func actual() {
 	input := ReadFile("input.txt")
 	partAValue, partAIndex, _ := FindInvalidXMAS(input, 25)
 	fmt.Printf("=== Part A ===\nInvalidXMAS: %d,%d\n", partAValue, partAIndex)
 
-	numberRange := SumToNumber(input[:partAIndex], partAValue)
+	numberRange, foundRange := SumToNumber(input[:partAIndex], partAValue)
+	if !foundRange {
+		log.Fatal("Could not sum to goal")
+	}
 	var lowest, highest = LowHigh(numberRange)
-	fmt.Printf("=== Part B ===\nHigest: %d, Lowest: %d, Added: %d\n%v\n", highest, lowest, highest+lowest, numberRange)
+	fmt.Printf("=== Part B ===\nHighest: %d, Lowest: %d, Added: %d\n%v\n", highest, lowest, highest+lowest, numberRange)
+}
+
+func Time() {
+	input := ReadFile("input.txt")
+	partAValue, partAIndex, _ := FindInvalidXMAS(input, 25)
+	if partAValue != 258585477 {
+		log.Fatal("Could not find PartA answer")
+	}
+
+	numberRange, foundRange := SumToNumber(input[:partAIndex], partAValue)
+	if !foundRange {
+		log.Fatal("Could not sum to goal")
+	}
+	var lowest, highest = LowHigh(numberRange)
+	if lowest+highest != 36981213 {
+		log.Fatal("Could not calculate the correct PartB answer")
+	}
+}
+
+func main() {
+	actual()
+	// time()
 }

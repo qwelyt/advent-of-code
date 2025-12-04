@@ -18,7 +18,7 @@ func TestFindInvalidXMAS(t *testing.T) {
 func TestFull(t *testing.T) {
 	input := ReadFile("example.txt")
 	partAValue, partAIndex, _ := FindInvalidXMAS(input, 5)
-	numberRange := SumToNumber(input[:partAIndex], partAValue)
+	numberRange, _ := SumToNumber(input[:partAIndex], partAValue)
 	var lowest, highest = LowHigh(numberRange)
 
 	if lowest != 15 {
@@ -27,4 +27,8 @@ func TestFull(t *testing.T) {
 	if highest != 47 {
 		t.Errorf("Expected: %d, got: %d", 47, highest)
 	}
+}
+
+func TestTime(t *testing.T) {
+	Time()
 }
