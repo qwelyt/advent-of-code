@@ -17,7 +17,7 @@ mod tests {
 
     #[ignore]
     #[test]
-    fn runday() {
+    fn run_day() {
         solve();
     }
 
