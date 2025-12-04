@@ -1,18 +1,18 @@
-package main;
+package main
 
 import (
-	"fmt"
 	"bufio"
-	"os"
+	"fmt"
 	"log"
+	"os"
 	"strconv"
-);
+)
 
 type Tuple3 struct {
-	_1,_2,_3 int
+	_1, _2, _3 int
 }
 
-func readFile(filePath string) []int{
+func ReadFile(filePath string) []int {
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Fatal(err)
@@ -26,7 +26,7 @@ func readFile(filePath string) []int{
 
 	var values []int
 	for scanner.Scan() {
-		value,err := strconv.Atoi(scanner.Text())
+		value, err := strconv.Atoi(scanner.Text())
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -35,7 +35,7 @@ func readFile(filePath string) []int{
 	return values
 }
 
-func sumToTarget(values []int, target int) Tuple3{
+func SumToTarget(values []int, target int) Tuple3 {
 	for i := 0; i < len(values); i++ {
 		for j := 0; j < len(values); j++ {
 			if i == j {
@@ -45,7 +45,7 @@ func sumToTarget(values []int, target int) Tuple3{
 				if i == k || j == k {
 					continue
 				}
-				if values[i] + values[j] + values[k] == target {
+				if values[i]+values[j]+values[k] == target {
 					return Tuple3{values[i], values[j], values[k]}
 				}
 			}
@@ -54,10 +54,14 @@ func sumToTarget(values []int, target int) Tuple3{
 	return Tuple3{}
 }
 
-func main(){
-	values := readFile("../input.txt")
+func Multiply(tuple Tuple3) int {
+	return tuple._1 * tuple._2 * tuple._3
+}
+
+func main() {
+	values := ReadFile("../input.txt")
 	//values := readFile("../example.txt")
-	tuple := sumToTarget(values, 2020)
-	multiply := tuple._1 * tuple._2 * tuple._3
+	tuple := SumToTarget(values, 2020)
+	multiply := Multiply(tuple)
 	fmt.Println(multiply)
 }
