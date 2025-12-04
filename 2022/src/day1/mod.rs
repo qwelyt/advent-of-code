@@ -1,3 +1,5 @@
+use std::fs::File;
+use std::io::{BufRead, BufReader};
 use crate::util::{lines_as_i32, vecs_i32};
 
 pub fn day1() {
@@ -42,6 +44,35 @@ fn part_b_2(input: &Vec<i32>) -> i32 {
         }
         if *v > top_three[index.clone()] {
             top_three[index.clone()] = *v;
+        }
+    }
+
+    top_three.iter().sum()
+}
+
+fn part_b_3(file: &str) -> i32 {
+    let open = File::open(file).expect("Could not read file");
+    let mut tmp = Vec::new();
+    let mut top_three = vec![0,0,0];
+    for line in BufReader::new(open).lines() {
+        let string = line.unwrap();
+        if string.is_empty() {
+            let sum = tmp.iter().sum();
+            tmp.clear();
+
+            let mut lowest = i32::MAX;
+            let mut index = 0;
+            for i in 0..3 {
+                if top_three[i] < lowest {
+                    lowest = top_three[i];
+                    index = i;
+                }
+            }
+            if sum > lowest {
+                top_three[index] = sum;
+            }
+        } else {
+            tmp.push(string.parse::<i32>().unwrap())
         }
     }
 
@@ -94,6 +125,15 @@ mod tests {
         let part_b_2_time = Instant::now();
         println!("  took {}ms", part_b_2_time.duration_since(part_b_time).as_millis());
     }
+    #[ignore]
+    #[test]
+    fn b3() {
+        let instant = Instant::now();
+        let result = part_b_3("src/day1/aoc_2022_day01_large_input.txt");
+        let end = Instant::now();
+        print!("Part B 3: {} took {}ms", result, end.duration_since(instant).as_millis());
+        assert_eq!(549010145, result);
+    }
 
     #[test]
     fn part_a_test_input() {
@@ -108,4 +148,4 @@ mod tests {
         let result = part_b(&input);
         assert_eq!(45000, result);
     }
-}
+    }
