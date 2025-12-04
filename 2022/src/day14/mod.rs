@@ -191,8 +191,8 @@ impl Cave {
     fn pour_sand_2(&mut self) -> u32 {
         let start = GridCoord { x: 500, y: 0 };
         let mut units = 0;
-        let mut full = false;
-        while !full {
+        let mut _full = false;
+        while !_full {
             let mut curr_pos = start;
             while let Some(direction) = self.go_to(&curr_pos, true) {
                 curr_pos = match direction {
@@ -203,10 +203,10 @@ impl Cave {
             }
             if curr_pos.eq(&start) {
                 units += 1;
-                full = true;
+                _full = true;
                 break;
             }
-            if !full {
+            if !_full {
                 units += 1;
                 self.occupied.insert(Position {
                     coord: curr_pos,
