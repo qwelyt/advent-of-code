@@ -71,8 +71,23 @@ describe('Parse instructions', () => {
 	})
 })
 
-it.only('SolveA', () => {
+it('SolveA', () => {
 	const input = file
 	const result = app.solveA(input)
 	console.log(result)
+})
+
+describe('Solve example input for B', () => {
+	describe('3,9,8,9,10,9,4,9,99,-1,8', () => {
+		it.only('Equal to 8', () => {
+			const codes = "3,9,8,9,10,9,4,9,99,-1,8"
+			const input = 8
+			const expected = {
+				arr: codes
+				, output: [0]
+			}
+			const result = app.solveB(codes, input)
+			expect(result).toStrictEqual(expected)
+		})
+	})
 })

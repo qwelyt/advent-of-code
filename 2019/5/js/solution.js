@@ -3,10 +3,15 @@ const immediateMode = (arr,i,offset) => arr[i+offset]
 const mode = s => Number.parseInt(s) === 1 ? immediateMode : positionMode
 const inverter = s => s === "0" ? "1" : "0"
 
-const add = (a,b) => a+b;
-const multiply = (a,b) => a*b;
+const add = (a,b) => a+b
+const multiply = (a,b) => a*b
+const jumpIfTrue = a => a > 0
+const jumpIfFalse = a => a < 1
+const lessThan = (a,b) => a<b ? 1 : 0
+const equalTo = (a,b) => a === b ? 1 : 0
 
 let output = []
+let valueToWrite = undefined
 
 const read = (arr, position) => {
 	const val = arr[position]
@@ -21,7 +26,7 @@ const writeRequireInput = (input, arr, position) => {
 }
 
 const write = (arr, position) => {
-	return writeRequireInput(1, arr, position)
+	return writeRequireInput(valueToWrite, arr, position)
 }
 
 
@@ -59,6 +64,26 @@ function parseInstruction(instruction){
 			ret["modifies"] = false
 			ret["length"] = 2
 			break
+		case "05":
+			ret["operation"] = jumpIfTrue
+			ret["modifies"] = false
+			ret["length"] = 2
+			break
+		case "06":
+			ret["operation"] = jumpIfFalse
+			ret["modifies"] = false
+			ret["length"] = 2
+			break
+		case "07":
+			ret["operation"] = lessThen
+			ret["modifies"] = true
+			ret["length"] = 4
+			break
+		case "08":
+			ret["operation"] = equalTo
+			ret["modifies"] = true
+			ret["length"] = 4
+			break
 		default:
 			throw new Error("Unknown opcode: "+opCode+" :  "+instruction)
 	}
@@ -66,8 +91,8 @@ function parseInstruction(instruction){
 	return ret
 }
 
-function solveA(input){
-	let arr = input.split(",").map(s => Number.parseInt(s))
+function run(codes){
+	let arr = codes.split(",").map(s => Number.parseInt(s))
 	//console.log(arr)
 	for(let i=0; i<arr.length;){
 		//console.log(i, arr[i])
@@ -80,19 +105,32 @@ function solveA(input){
 			const storePosition = instruction.storePosition(arr, i, 3)
 
 			arr[storePosition] = instruction.operation(param1,param2)
+			i += instruction.length
 		} else if(instruction.length === 2){
 			const storePosition = instruction.storePosition(arr, i, 1)
 			const result =  instruction.operation(arr, storePosition)
 			if(instruction.modifies) arr[storePosition] = result
+
+			if(instruction.jumps && result) i = storePosition
+			else i += instruction.length
 		} else {
 			throw new Error("Unknown instruction: "+JSON.stringify(instruction))
 		}
-		i += instruction.length
 	}
 	return {
 		output: output
 		, arr: arr
 	}
+}
+
+function solveA(codes){
+	valueToWrite = 1
+	return run(codes)
+}
+
+function solveB(codes, input){
+	valueToWrite = input
+	return run(codes)
 }
 
 module.exports = {
@@ -104,4 +142,5 @@ module.exports = {
 	, positionMode: positionMode
 	, immediateMode: immediateMode
 	, solveA: solveA
+	, solveB: solveB
 }
