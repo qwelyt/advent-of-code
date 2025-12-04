@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
@@ -31,7 +31,7 @@ fn part_a(input: &str) -> usize {
         hands.push((hand, bid.parse::<usize>().unwrap()))
     }
     hands.sort_by(|(a, _), (b, _)|
-        hand_score(a).cmp(&hand_score(b))
+        hand_score_2(a).cmp(&hand_score_2(b))
             .then(a[0].cmp(&b[0]))
             .then(a[1].cmp(&b[1]))
             .then(a[2].cmp(&b[2]))
@@ -81,6 +81,26 @@ fn hand_score(hand: &Vec<usize>) -> usize {
     }
 }
 
+fn hand_score_2(hand: &Vec<usize>) -> usize {
+    let set: HashSet<usize> = HashSet::from_iter(hand.clone().into_iter());
+
+    let mut counts = set.iter()
+        .map(|i| hand.iter().filter(|h| *h == i).count())
+        .collect::<Vec<usize>>();
+    counts.sort();
+
+    match counts.as_slice() {
+        [5] => 7,
+        [1, 4] => 6,
+        [2, 3] => 5,
+        [1, 1, 3] => 4,
+        [1, 2, 2] => 3,
+        [1, 1, 1, 2] => 2,
+        _ => 1,
+    }
+}
+
+
 fn part_b(input: &str) -> usize {
     let open = File::open(input).unwrap();
     let mut hands = Vec::new();
@@ -101,7 +121,7 @@ fn part_b(input: &str) -> usize {
         hands.push((hand, bid.parse::<usize>().unwrap()))
     }
     hands.sort_by(|(a, _), (b, _)|
-        hand_score_b(a).cmp(&hand_score_b(b))
+        hand_score_b2(a).cmp(&hand_score_b2(b))
             .then(a[0].cmp(&b[0]))
             .then(a[1].cmp(&b[1]))
             .then(a[2].cmp(&b[2]))
@@ -207,6 +227,33 @@ fn hand_score_b(hand: &Vec<usize>) -> usize {
     hand_score(hand)
 }
 
+fn hand_score_b2(hand: &Vec<usize>) -> usize {
+    let mut set: HashSet<usize> = HashSet::from_iter(hand.clone().into_iter());
+    set.remove(&1);
+
+    let mut counts = set.iter()
+        .map(|i| hand.iter().filter(|h| *h == i).count())
+        .collect::<Vec<usize>>();
+    counts.sort();
+
+    let missing = 5 - counts.iter().sum::<usize>();
+
+    match counts.last_mut() {
+        None => counts.push(5),
+        Some(v) => *v += missing,
+    }
+
+    match counts.as_slice() {
+        [5] => 7,
+        [1, 4] => 6,
+        [2, 3] => 5,
+        [1, 1, 3] => 4,
+        [1, 2, 2] => 3,
+        [1, 1, 1, 2] => 2,
+        _ => 1,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -228,7 +275,7 @@ mod tests {
     #[test]
     fn real_b() {
         let input = "src/day7/input.txt";
-        assert_eq!(0, part_b(input));
+        assert_eq!(249356515, part_b(input));
     }
 
     #[test]
