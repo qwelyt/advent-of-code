@@ -59,7 +59,6 @@ enum Shape {
 impl Shape {}
 
 impl Shape {
-    fn collision(&self) {}
     fn lowest_point(&self, tower_height: usize) -> GridCoord {
         let lowes_point_for_rock = (tower_height + 3 + 1) as usize;
         match self {
@@ -108,38 +107,6 @@ impl Shape {
             ],
         };
         v.iter().map(|p| (*p).into()).collect()
-    }
-
-    fn as_chamber_arr(&self, lowest_left: GridCoord) -> [usize; 7] {
-        let vec = self.points_from_lowest_left(lowest_left);
-        let mut c = [0, 0, 0, 0, 0, 0, 0];
-        for i in 0..7 {
-            c[i] = vec.iter()
-                .filter(|p| p.x == i)
-                .map(|p| p.y)
-                .min()
-                .unwrap_or(0);
-        }
-        c
-    }
-
-    fn height(&self) -> usize {
-        match self {
-            Shape::Dash => 1,
-            Shape::Plus => 3,
-            Shape::L => 3,
-            Shape::Line => 4,
-            Shape::Box => 2,
-        }
-    }
-    fn width(&self) -> usize {
-        match self {
-            Shape::Dash => 4,
-            Shape::Plus => 3,
-            Shape::L => 3,
-            Shape::Line => 1,
-            Shape::Box => 2,
-        }
     }
 }
 
@@ -306,16 +273,8 @@ impl Tower {
         *self.history.keys().max().unwrap_or(&0)
     }
     fn cycle_height_after(&mut self, num_rocks: usize) -> usize {
-        // for cycle in 1..=2022 {
-        //     while self.jet_turn < self.jets.len() *cycle{
-        //         self.let_the_rocks_fall(1, false);
-        //     }
-        //     let height = self.history.keys().max().unwrap_or(&0);
-        //     println!("Rocks after cycle {}: {} and reach height {}", cycle, self.rock_turn, height);
-        // }
-        // self.let_the_rocks_fall(2022, false); // Get rid of false positives
         let cycle_jet_turns = self.jets.len() * self.rock_order.len();
-        self.let_the_rocks_fall(2022, false);
+        self.let_the_rocks_fall(2022, false); // Get rids of false cycles.
         let start = self.jet_turn;
         let bottom_height = *self.history.keys().max().unwrap_or(&0);
         let bottom_rock = self.rock_turn;
