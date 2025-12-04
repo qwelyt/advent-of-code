@@ -369,13 +369,19 @@ impl Cube {
     }
 
     fn re_face(&self, xy: (isize, isize), facing: &Direction) -> Position {
+        println!("{:?}", xy);
         let region_index = self.regions.iter()
             .enumerate()
             .filter_map(|(index, reg)| {
-                if reg.1 + self.region_size > xy.1
-                    && reg.1 <= xy.1
-                    && reg.0 + self.region_size > xy.0
-                    && reg.0 <= xy.0 {
+                // println!("{:?} .. {:?}", reg.0 + self.region_size, reg.1+self.region_size  );
+                println!("x: {:?} > {:?} >= {:?}", reg.0 + self.region_size, xy.0, reg.0);
+                println!("y: {:?} > {:?} >= {:?}", reg.1 + self.region_size, xy.1, reg.1);
+                println!("{}", xy.1 as f64 / self.rows.len() as f64 * 3.0);
+                println!("{}", xy.1 as f64 / self.rows.len() as f64 * 4.0);
+                if reg.0 + self.region_size > xy.0
+                    && xy.0 >= reg.0
+                    && reg.1 + self.region_size > xy.1
+                    && xy.1 >= reg.1 {
                     Some(index)
                 } else {
                     None
@@ -386,9 +392,9 @@ impl Cube {
 
         let reg_coord = (xy.0 - self.regions[region_index].0, xy.1 - self.regions[region_index].1);
         /*
-             01
-             4
-            32
+             01    0
+             4   123
+            32     45
             5
          */
         let rs_1 = self.region_size - 1;
@@ -420,9 +426,9 @@ impl Cube {
                 _ => (xy.0, xy.1, *facing)
             }
             5 => match facing {
-                Direction::Right => (self.regions[2].0 + reg_coord.0, self.regions[1].1 + rs_1, Direction::Up),
+                Direction::Right => (self.regions[2].0 + reg_coord.1, self.regions[1].1 + rs_1, Direction::Up),
                 Direction::Down => (self.regions[1].0 + reg_coord.0, self.regions[1].1, Direction::Down),
-                Direction::Left => (self.regions[2].0 + reg_coord.1, self.regions[2].1, Direction::Down),
+                Direction::Left => (self.regions[0].0 + reg_coord.1, self.regions[0].1, Direction::Down),
                 _ => (xy.0, xy.1, *facing)
             }
             _ => panic!("Unknown index")
@@ -442,6 +448,12 @@ impl Cube {
             match self.rows.get(new_xy.1 as usize).unwrap().get(new_xy.0 as usize).unwrap() {
                 Tile::Empty => {
                     // We have gone to a new region and need to re-face.
+                    let n = self.re_face(new_xy, &pos.facing);
+                    if self.rows.get(n.y as usize).unwrap().get(n.x as usize).unwrap() != &Tile::Wall {
+                        return n;
+                    } else {
+                        return *pos;
+                    }
                 }
                 Tile::Wall => return *pos,
                 Tile::Open => return Position::from((new_xy.0, new_xy.1, pos.facing)),
@@ -506,7 +518,10 @@ impl MonkeyMap {
         };
         // println!("{:?}", self.cube);
         for mv in self.moves.iter() {
+            // println!("Apply move: {:?} {:?}", mv, pos.facing);
             pos = pos.apply_folded(mv, &self.cube);
+            // println!("New pos: {:?} \t after {:?}", pos, mv);
+            // MonkeyMap::print(&pos, &self.board);
         }
 
         (pos.y + 1) * 1000 + (pos.x + 1) * 4 + pos.facing.value()
@@ -546,7 +561,8 @@ fn part_a(input: &str) -> isize {
 fn part_b(input: &str) -> isize {
     let open = std::fs::read_to_string(input.to_string()).expect("Could not read file");
     let map = MonkeyMap::parse(open.as_str());
-    map.walk_folded()
+    // map.walk_folded()
+    0
 }
 
 #[cfg(test)]
