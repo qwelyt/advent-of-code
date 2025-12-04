@@ -32,24 +32,12 @@ fn part_a(input: &Vec<String>) -> u32 {
     lowest_points.iter().map(|i| i + 1).sum()
 }
 
-#[derive(Debug, Eq, PartialEq, Hash, Clone)]
-struct SPoint {
-    row: usize,
-    col: usize,
-}
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Copy)]
 struct RC {
     r: usize,
     c: usize,
     v: u32,
-}
-
-#[derive(Debug, Eq, PartialEq)]
-struct Point {
-    row: usize,
-    col: usize,
-    neighbours: Vec<SPoint>,
 }
 
 fn part_b(input: &Vec<String>) -> usize {
