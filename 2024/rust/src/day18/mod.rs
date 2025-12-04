@@ -66,8 +66,8 @@ impl Memory {
     }
 
     fn corrupt(&mut self, corruptions: usize) {
-        for i in 0..corruptions {
-            let coord = self.corruptions[self.corruption_index];
+        for i in self.corruption_index..self.corruption_index+corruptions {
+            let coord = self.corruptions[i];
             self.grid[coord.1][coord.0] = false;
         }
         self.corruption_index += corruptions;
