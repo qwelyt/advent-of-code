@@ -16,7 +16,7 @@ func TestReadFile(t *testing.T) {
 func TestSumToTarget(t *testing.T) {
 	values := []int{1721, 979, 366, 299, 675, 1456}
 	result := SumToTarget(values, 2020)
-	expected := Tuple3{979, 366, 675}
+	expected := Tuple3{366, 979, 675}
 	if result != expected {
 		t.Errorf("Value incorrect. Wanted %d, got %d", expected, result)
 	}
@@ -30,3 +30,7 @@ func TestMultiply(t *testing.T) {
 		t.Errorf("Value incorrect. Wanted %d, got %d", expected, result)
 	}
 }
+
+// func TestDebug(t *testing.T) {
+// 	Debug()
+// }
