@@ -50,21 +50,16 @@ fn part_b(input: &str) -> i32 {
 }
 
 fn find_group_duplicate(group: &Vec<&str>) -> char {
-    // for g in group.iter() {
-    //     println!("{:?}", g)
-    // }
-    // println!();
     let chars: Vec<HashSet<char>> = group.iter()
         .map(|s| *s)
         .map(|s| s.chars().collect::<HashSet<char>>())
         .collect();
-    // println!("{:?}", chars);
-    let s = chars[0].intersection(&chars[1]).cloned().collect();
-    let a = chars[2].intersection(&s);
-    // println!("{:?}", a);
-    for c in a {
-        return *c;
+
+    let mut s = chars[0].clone();
+    for set in chars {
+        s = s.intersection(&set).cloned().collect();
     }
+    for c in s { return c; }
     ' '
 }
 
