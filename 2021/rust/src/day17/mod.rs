@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use crate::util::lines_from_file;
 
 pub fn day17() {
@@ -10,23 +12,8 @@ pub fn day17() {
 }
 
 fn part_a(input: &Vec<String>) -> i32 {
-    let target = input.get(0)
-        .unwrap()
-        .split(": ")
-        .collect::<Vec<&str>>()
-        .get(1)
-        .unwrap()
-        .split(", ")
-        .collect::<Vec<&str>>()
-        .iter()
-        .map(|s| s.split("=").collect::<Vec<&str>>())
-        .map(|v| {
-            let xy = v.get(0).unwrap().chars().collect::<Vec<char>>()[0];
-            let range_vec: Vec<i32> = v.get(1).unwrap().split("..").collect::<Vec<&str>>().iter().map(|n| i32::from_str_radix(n, 10).unwrap()).collect();
-            return (xy, (*range_vec.get(0).unwrap(), *range_vec.get(1).unwrap()));
-        })
-        .collect::<Vec<(char, (i32, i32))>>();
-    println!("{:?}", target);
+    let target: Vec<(char, (i32, i32))> = parse_target(input);
+    // println!("{:?}", target);
 
     let mut pos = (0, 0);
     let mut vel = (0, 0);
@@ -68,6 +55,66 @@ fn part_a(input: &Vec<String>) -> i32 {
     y
 }
 
+fn part_b(input: &Vec<String>) -> usize {
+    let target: Vec<(char, (i32, i32))> = parse_target(input);
+    let mut pos = (0, 0);
+    let mut vel = (0, 0);
+    let steps = i32::abs(target[1].1.0) * i32::abs(target[0].1.1);
+    let mut velocities = Vec::new();
+    for x in 0..=target[0].1.1 {
+        for y in target[1].1.0..=i32::abs(target[1].1.0) {
+            velocities.push((x, y));
+        }
+    }
+    let mut valid: Vec<(i32, i32)> = Vec::new();
+    for test_vel in velocities {
+        pos = (0, 0);
+        vel = test_vel;
+        // println!("Testing: {:?}", vel);
+        for step in 0..steps {
+            pos.0 += vel.0;
+            pos.1 += vel.1;
+            vel.0 -= 1;
+            vel.1 -= 1;
+            if vel.0 < 0 {
+                vel.0 = 0;
+            }
+
+
+            // println!("Pos: {:?} , in range: {}", pos, in_range(&pos, &target));
+            if in_range(&pos, &target) {
+                valid.push(test_vel);
+                break;
+            }
+            if past_range(&pos, &target) {
+                break;
+            }
+        }
+    }
+
+    let set: HashSet<&(i32, i32)> = HashSet::from_iter(valid.iter());
+    set.len()
+}
+
+fn parse_target(input: &Vec<String>) -> Vec<(char, (i32, i32))> {
+    input.get(0)
+        .unwrap()
+        .split(": ")
+        .collect::<Vec<&str>>()
+        .get(1)
+        .unwrap()
+        .split(", ")
+        .collect::<Vec<&str>>()
+        .iter()
+        .map(|s| s.split("=").collect::<Vec<&str>>())
+        .map(|v| {
+            let xy = v.get(0).unwrap().chars().collect::<Vec<char>>()[0];
+            let range_vec: Vec<i32> = v.get(1).unwrap().split("..").collect::<Vec<&str>>().iter().map(|n| i32::from_str_radix(n, 10).unwrap()).collect();
+            return (xy, (*range_vec.get(0).unwrap(), *range_vec.get(1).unwrap()));
+        })
+        .collect::<Vec<(char, (i32, i32))>>()
+}
+
 fn past_range(pos: &(i32, i32), target: &Vec<(char, (i32, i32))>) -> bool {
     if pos.0 > target[0].1.1 { return true; }
     if pos.1 < target[1].1.0 { return true; }
@@ -81,10 +128,6 @@ fn in_range(pos: &(i32, i32), target: &Vec<(char, (i32, i32))>) -> bool {
     let ty = target[1].1;
 
     x >= tx.0 && x <= tx.1 && y >= ty.0 && y <= ty.1
-}
-
-fn part_b(_input: &Vec<String>) -> u32 {
-    todo!()
 }
 
 #[cfg(test)]
@@ -116,5 +159,21 @@ mod tests {
         let input = lines_from_file(filename);
         let result = part_a(&input);
         assert_eq!(35511, result)
+    }
+
+    #[test]
+    fn part_b_test_input() {
+        let filename = "src/day17/test-input.txt";
+        let input = lines_from_file(filename);
+        let result = part_b(&input);
+        assert_eq!(112, result)
+    }
+
+    #[test]
+    fn part_b_real() {
+        let filename = "src/day17/input.txt";
+        let input = lines_from_file(filename);
+        let result = part_b(&input);
+        assert_eq!(3282, result)
     }
 }
