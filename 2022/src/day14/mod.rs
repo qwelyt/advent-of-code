@@ -139,38 +139,34 @@ impl Cave {
         let mut full = false;
         while !full {
             let mut curr_pos = start;
-            let mut run = true;
-            while run {
-                let go = self.go_to(&curr_pos);
-                // println!("Pos: {:?} and go {:?}", curr_pos, go);
-                if go.is_some() {
-                    curr_pos = match go.unwrap() {
-                        Direction::Left => GridCoord::left(&curr_pos),
-                        Direction::Down => GridCoord::down(&curr_pos),
-                        Direction::Right => GridCoord::right(&curr_pos),
-                    }
-                } else {
-                    run = false;
-                }
+            while let Some(direction) = self.go_to(&curr_pos, false) {
                 if !self.in_bounds(&curr_pos) {
                     full = true;
-                    run = false;
+                    break;
                 }
-                if !run && !full {
-                    units += 1;
-                    self.occupied.insert(Position {
-                        coord: curr_pos,
-                        cell: Cell::Sand,
-                    });
-                    // println!("{:?}", curr_pos);
-                    // println!("{:?}", self);
+
+                curr_pos = match direction {
+                    Direction::Left => GridCoord::left(&curr_pos),
+                    Direction::Down => GridCoord::down(&curr_pos),
+                    Direction::Right => GridCoord::right(&curr_pos),
                 }
             }
+            if !full {
+                units += 1;
+                self.occupied.insert(Position {
+                    coord: curr_pos,
+                    cell: Cell::Sand,
+                });
+            }
+            // println!("{:?}", self);
         }
         units
     }
 
-    fn go_to(&self, sand: &GridCoord) -> Option<Direction> {
+    fn go_to(&self, sand: &GridCoord, has_floor: bool) -> Option<Direction> {
+        if has_floor && GridCoord::down(sand).y == self.height + 1 {
+            return None;
+        }
         if !self.is_occupied(&GridCoord::down(sand)) {
             return Some(Direction::Down);
         } else if !self.is_occupied(&GridCoord::left(sand)) {
@@ -197,51 +193,28 @@ impl Cave {
         let mut units = 0;
         let mut full = false;
         while !full {
-            // for _ in 0..100 {
             let mut curr_pos = start;
-            let mut run = true;
-            while run {
-                let go = self.go_to_2(&curr_pos);
-                // println!("Pos: {:?} and go {:?}", curr_pos, go);
-                if go.is_some() {
-                    curr_pos = match go.unwrap() {
-                        Direction::Left => GridCoord::left(&curr_pos),
-                        Direction::Down => GridCoord::down(&curr_pos),
-                        Direction::Right => GridCoord::right(&curr_pos),
-                    }
-                } else {
-                    run = false;
-                }
-                if curr_pos.eq(&start) {
-                    units += 1;
-                    full = true;
-                    run = false;
-                }
-                if !run && !full {
-                    units += 1;
-                    self.occupied.insert(Position {
-                        coord: curr_pos,
-                        cell: Cell::Sand,
-                    });
-                    // println!("{:?}", curr_pos);
-                    // println!("{:?}", self);
-                }
+            while let Some(direction) = self.go_to(&curr_pos, true) {
+                curr_pos = match direction {
+                    Direction::Left => GridCoord::left(&curr_pos),
+                    Direction::Down => GridCoord::down(&curr_pos),
+                    Direction::Right => GridCoord::right(&curr_pos),
+                };
+            }
+            if curr_pos.eq(&start) {
+                units += 1;
+                full = true;
+                break;
+            }
+            if !full {
+                units += 1;
+                self.occupied.insert(Position {
+                    coord: curr_pos,
+                    cell: Cell::Sand,
+                });
             }
         }
         units
-    }
-    fn go_to_2(&self, sand: &GridCoord) -> Option<Direction> {
-        if GridCoord::down(sand).y == self.height + 1 {
-            return None;
-        }
-        if !self.is_occupied(&GridCoord::down(sand)) {
-            return Some(Direction::Down);
-        } else if !self.is_occupied(&GridCoord::left(sand)) {
-            return Some(Direction::Left);
-        } else if !self.is_occupied(&GridCoord::right(sand)) {
-            return Some(Direction::Right);
-        }
-        None
     }
 }
 
