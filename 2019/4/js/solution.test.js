@@ -2,7 +2,7 @@ const solver = require("./solution.js");
 //const file = require("./read-input.js");
 const file = "284639-748759";
 
-describe('Verify examples', () => {
+describe('Verify examples, A', () => {
 	it('1', () => {
 		const input = 111111;
 		const result = solver.verify(input);
@@ -71,15 +71,43 @@ describe('Test verify', () =>{
 
 it('Test basic range', () => {
 	const input = "100000-111111";
-	const result = solver.solve(input);
+	const result = solver.anyGroup(input);
 	const expected = [111111];
 	expect(result).toStrictEqual(expected);
 })
 
 it('Solve A', () => {
 	const input = file;
-	const result = solver.solve(input);
-	console.log("Result:", result);
-	console.log("Answer:",result.length);
+	const result = solver.anyGroup(input);
+	//console.log("Result:", result);
+	console.log("Answer A:",result.length);
 	expect(result.length).toBe(895);
+})
+
+describe('Verify examples, B', () => {
+	const f = solver.verifyWithLimits;
+
+	it('1', () => {
+		const input = 112233;
+		const result = f(input);
+		expect(result).toBe(true);
+	})
+	it('2', () => {
+		const input = 123444;
+		const result = f(input);
+		expect(result).toBe(false);
+	})
+	it('3', () => {
+		const input = 111122;
+		const result = f(input);
+		expect(result).toBe(true);
+	})
+})
+
+it('Solve B', () => {
+	const input = file;
+	const result = solver.groupLimits(input);
+	//console.log("Result:", result);
+	console.log("Answer B:",result.length);
+	expect(result.length).toBe(591);
 })
