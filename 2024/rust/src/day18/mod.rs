@@ -29,18 +29,32 @@ fn p1(input: &str, rows: usize, cols: usize, corruptions: usize) -> u32 {
     memory.find_exit().unwrap()
 }
 fn p2(input: &str, rows: usize, cols: usize) -> (usize, usize) {
-    let mut memory = Memory::new(input, (rows, cols));
-    for i in 0..memory.corruptions.len() {
-        memory.corrupt(1);
-        // memory._print();
-        if memory.find_exit().is_none() {
-            return memory.corruptions[i];
+    let memory = Memory::new(input, (rows, cols));
+    // Brute-force
+    // for i in 0..memory.corruptions.len() {
+    //     memory.corrupt(1);
+    //     // memory._print();
+    //     if memory.find_exit().is_none() {
+    //         return memory.corruptions[i];
+    //     }
+    // }
+    // Binary search
+    let mut low = 0;
+    let mut high = memory.corruptions.len()-1;
+    while low < high {
+        let mid = (low + high) / 2;
+        let mut m = memory.clone();
+        m.corrupt(mid+1);
+        if m.find_exit().is_none() {
+            high = mid;
+        } else {
+            low = mid+1;
         }
     }
-    panic!("No blocker found")
+    memory.corruptions[low]
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Memory {
     grid: Vec<Vec<bool>>,
     corruptions: Vec<(usize, usize)>,
