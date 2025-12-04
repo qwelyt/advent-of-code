@@ -10,6 +10,14 @@ pub fn day20() {
 }
 
 fn part_a(input: &Vec<String>) -> usize {
+    solve(input, 2)
+}
+
+fn part_b(input: &Vec<String>) -> usize {
+    solve(input, 50)
+}
+
+fn solve(input: &Vec<String>, iterations: u32) -> usize {
     let algorithm = input.get(0).unwrap().chars().collect::<Vec<char>>();
     let image: Vec<Vec<char>> = input.iter()
         .skip(2)
@@ -18,22 +26,24 @@ fn part_a(input: &Vec<String>) -> usize {
     // println!("{:?}", algorithm);
     // println!("{:?}", image);
 
-    print_image(&image);
-    println!();
+    // print_image(&image);
+    // println!();
 
-    let enhanced_1: Vec<Vec<char>> = enhance(&algorithm, &image);
-    print_image(&enhanced_1);
-    println!();
-    let enhanced_2: Vec<Vec<char>> = enhance(&algorithm, &enhanced_1);
-    print_image(&enhanced_2);
+    let mut img = image.clone();
+    for i in 0..iterations {
+        // println!("{}    {}", i, i % 2);
+        img = enhance(&algorithm, &img, i);
+        // print_image(&img);
+        // println!();
+    }
 
-
-    enhanced_2.iter()
+    img.iter()
         .flatten()
         .filter(|c| **c == '#')
         .count()
 }
 
+#[allow(dead_code)]
 fn print_image(image: &Vec<Vec<char>>) {
     for row in image.iter() {
         let string = row.iter().collect::<String>();
@@ -41,25 +51,37 @@ fn print_image(image: &Vec<Vec<char>>) {
     }
 }
 
-fn enhance(algorithm: &Vec<char>, image: &Vec<Vec<char>>) -> Vec<Vec<char>> {
+fn enhance(algorithm: &Vec<char>, image: &Vec<Vec<char>>, iteration: u32) -> Vec<Vec<char>> {
     let rd = [-1, -1, -1, 0, 0, 0, 1, 1, 1];
     let cd = [-1, 0, 1, -1, 0, 1, -1, 0, 1];
     let rows = image.len();
     let cols = image.get(0).unwrap().len();
-    let scan_rows = (rows + 2) as i32;
-    let scan_cols = (cols + 2) as i32;
+    let border = 1;
+    let scan_rows = (rows + border) as i32;
+    let scan_cols = (cols + border) as i32;
+    let scan_start = border as i32 * -1;
     // println!("({},{}) :: ({},{})", rows, cols, scan_rows,scan_cols);
     let mut new_image_info = Vec::new();
-    for r_index in -2..scan_rows {
+    for r_index in scan_start..scan_rows {
         // In input image
         let mut new_row = Vec::new();
-        for c_index in -2..scan_cols {
+        for c_index in scan_start..scan_cols {
             let mut pixels = Vec::new();
             for i in 0..rd.len() {
                 let rr = r_index as i32 + rd[i];
                 let cc = c_index as i32 + cd[i];
                 if rr < 0 || cc < 0 || rr >= rows as i32 || cc >= cols as i32 {
-                    pixels.push('.');
+                    // So a ['.'; 9] maps to algorithm[0], what does [algorithm[0]; 9] produce
+                    // on the next iteration?
+                    // The world flickers for each step. The test data does not show this as
+                    // algorithm[0] in that case is a '.', but our data that is '#' which means
+                    // the next iteration we have 512 as the read value (happens to be a '.' in our
+                    // case, but a '#' in the test data)
+                    if iteration % 2 == 0 {
+                        pixels.push('.');
+                    } else {
+                        pixels.push(algorithm[0]);
+                    }
                 } else {
                     pixels.push(image[rr as usize][cc as usize]);
                 }
@@ -77,9 +99,9 @@ fn enhance(algorithm: &Vec<char>, image: &Vec<Vec<char>>) -> Vec<Vec<char>> {
         }
         new_image_info.push(new_row);
     }
-    for r in new_image_info.iter() {
-        println!("{:?}", r);
-    }
+    // for r in new_image_info.iter() {
+    //     println!("{:?}", r);
+    // }
 
     // println!("{:?}", new_image_info);
     let vec = new_image_info.iter()
@@ -92,10 +114,6 @@ fn enhance(algorithm: &Vec<char>, image: &Vec<Vec<char>>) -> Vec<Vec<char>> {
 
 
     vec
-}
-
-fn part_b(input: &Vec<String>) -> u32 {
-    todo!()
 }
 
 #[cfg(test)]
@@ -116,6 +134,23 @@ mod tests {
         let input = lines_from_file(filename);
         let result = part_a(&input);
         assert_eq!(true, 5413 > result);
-        assert_eq!(1, result);
+        assert_ne!(5352, result);
+        assert_eq!(5400, result);
+    }
+
+    #[test]
+    fn part_b_test_input() {
+        let filename = "src/day20/test-input.txt";
+        let input = lines_from_file(filename);
+        let result = part_b(&input);
+        assert_eq!(3351, result)
+    }
+
+    #[test]
+    fn part_b_real() {
+        let filename = "src/day20/input.txt";
+        let input = lines_from_file(filename);
+        let result = part_b(&input);
+        assert_eq!(18989, result);
     }
 }
