@@ -1,7 +1,7 @@
-const computer = require('./intcode-computer.js')
+const computer = require('../../IntCodeComputer/js/IntCodeComputer.js')
 
-function solveA(codes){
-    return computer.run(codes, [])
+function solveA(codes) {
+     computer.compute(codes, [1])
 }
 
 

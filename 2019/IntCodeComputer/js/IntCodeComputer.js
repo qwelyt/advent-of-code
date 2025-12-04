@@ -1,15 +1,15 @@
-let relativeBase = 0
 
 const readMode = {
-  positionMode: (arr, i, offset) => arr[arr[i + offset]]
-  , immediateMode: (arr, i, offset) => arr[i + offset]
-  , relativeMode: (arr, i, offset) => arr[arr[i+offset] + relativeBase]
+  positionMode: (arr, i, offset, relativeBase) => arr[arr[i + offset]]
+  , immediateMode: (arr, i, offset, relativeBase) => arr[i + offset]
+  , relativeMode: (arr, i, offset, relativeBase) => arr[arr[i+offset] + relativeBase]
   , modeDecider: n => n === 0 ? readMode.positionMode : n === 1 ? readMode.immediateMode : readMode.relativeMode
   , mode: s => readMode.modeDecider(Number.parseInt(s))
 }
 const writeMode = {
-  positionMode: (arr, i, offset) => arr[i + offset]
-  , relativeMode: (arr, i, offset) => arr[i] + relativeBase
+  positionMode: (arr, i, offset, relativeBase) => arr[i + offset]
+  , immediateMode: (arr,i,offset,relativeBase) => writeMode.positionMode(arr,i,offset)
+  , relativeMode: (arr, i, offset,relativeBase) => arr[i+offset] + relativeBase
   , modeDecider: n => n === 0 ? writeMode.positionMode : n === 1 ? writeMode.immediateMode : writeMode.relativeMode
   , mode: s => writeMode.modeDecider(Number.parseInt(s))
 }
@@ -31,7 +31,7 @@ const adjustRelativeBase = (a, b) => a + b
 function parseInstruction(code) {
   const ins = ("" + code).padStart(5, '0')
   const opCode = ins.substring(ins.length - 2)
-  const params = ins.substring(0, ins.length - 2)
+  const params = ins.substring(0, ins.length - 2).split('').reverse()
 
   let instruction = {
     opCode: opCode
@@ -44,51 +44,51 @@ function parseInstruction(code) {
   switch (opCode) {
     case "01":
       instruction.operation = add
-      instruction.paramModes = [readMode.mode(params[2]), readMode.mode(params[1])]
-      instruction.storeMode = writeMode.mode(params[0])
+      instruction.paramModes = [readMode.mode(params[0]), readMode.mode(params[1])]
+      instruction.storeMode = writeMode.mode(params[2])
       instruction.length = 4
       break
     case "02":
       instruction.operation = multiply
-      instruction.paramModes = [readMode.mode(params[2]), readMode.mode(params[1])]
-      instruction.storeMode = writeMode.mode(params[0])
+      instruction.paramModes = [readMode.mode(params[0]), readMode.mode(params[1])]
+      instruction.storeMode = writeMode.mode(params[2])
       instruction.length = 4
       break
     case "03":
       instruction.operation = write
-      instruction.storeMode = writeMode.mode(params[1])
+      instruction.storeMode = writeMode.mode(params[0])
       instruction.length = 2
       break
     case "04":
       instruction.operation = read
-      instruction.paramModes = [readMode.mode(params[2])]
+      instruction.paramModes = [readMode.mode(params[0])]
       instruction.length = 2
       break
     case "05":
       instruction.operation = jumpIfTrue
-      instruction.paramModes = [readMode.mode(params[2]), readMode.mode(params[1])]
+      instruction.paramModes = [readMode.mode(params[0]), readMode.mode(params[1])]
       instruction.length = 3
       break
     case "06":
       instruction.operation = jumpIfFalse
-      instruction.paramModes = [readMode.mode(params[2]), readMode.mode(params[1])]
+      instruction.paramModes = [readMode.mode(params[0]), readMode.mode(params[1])]
       instruction.length = 3
       break
     case "07":
       instruction.operation = lessThan
-      instruction.paramModes = [readMode.mode(params[2]), readMode.mode(params[1])]
-      instruction.storeMode = writeMode.mode(params[0])
+      instruction.paramModes = [readMode.mode(params[0]), readMode.mode(params[1])]
+      instruction.storeMode = writeMode.mode(params[2])
       instruction.length = 4
       break
     case "08":
       instruction.operation = equalTo
-      instruction.paramModes = [readMode.mode(params[2]), readMode.mode(params[1])]
-      instruction.storeMode = writeMode.mode(params[0])
+      instruction.paramModes = [readMode.mode(params[0]), readMode.mode(params[1])]
+      instruction.storeMode = writeMode.mode(params[2])
       instruction.length = 4
       break
     case "09":
       instruction.operation = adjustRelativeBase
-      instruction.paramModes = [readMode.mode(params[2])]
+      instruction.paramModes = [readMode.mode(params[0])]
       instruction.length = 2
       break
     default:
@@ -105,6 +105,8 @@ function arrify(args) {
 let indexes = []
 function execute(args) {
   let arr = arrify(args)
+  let relativeBase = 0
+
   for (let i = 0; i < arr.length;) {
     indexes.push(i)
     if (arr[i] === 99) break;
@@ -116,31 +118,31 @@ function execute(args) {
       || "08" === instruction.opCode // equalTo
       ) { 
       const result = instruction.operation(
-        instruction.paramModes[0](arr, i, 1)
-        , instruction.paramModes[1](arr, i, 2)
+        instruction.paramModes[0](arr, i, 1, relativeBase)
+        , instruction.paramModes[1](arr, i, 2, relativeBase)
       )
-      const store = instruction.storeMode(arr, i, 3)
+      const store = instruction.storeMode(arr, i, 3, relativeBase)
       arr[store] = result
       i += instruction.length
     } else if ("03" === instruction.opCode) { // write
       const result = instruction.operation()
-      const store = instruction.storeMode(arr, i, instruction.length - 1)
+      const store = instruction.storeMode(arr, i, 1, relativeBase)
       arr[store] = result
       i += instruction.length
     } else if ("04" === instruction.opCode) { // read
-      const param = instruction.paramModes[0](arr, i, 1)
+      const param = instruction.paramModes[0](arr, i, 1, relativeBase)
       instruction.operation(param)
       i += instruction.length
     } else if ("05" === instruction.opCode // jumpIfTrue
       || "06" === instruction.opCode) { // jumpIfFalse
-      const param1 = instruction.paramModes[0](arr, i, 1)
-      const param2 = instruction.paramModes[1](arr, i, 2)
+      const param1 = instruction.paramModes[0](arr, i, 1,relativeBase)
+      const param2 = instruction.paramModes[1](arr, i, 2,relativeBase)
       const result = instruction.operation(param1)
       if (result) i = param2
       else i += instruction.length
     } else if ("09" === instruction.opCode) {
-      const param = instruction.paramModes[0](arr,i,instruction.length-1)
-      relativeBase = instruction.operation(relativeBase, param)
+      const param = instruction.paramModes[0](arr,i,1,relativeBase)
+      relativeBase += param//instruction.operation(relativeBase, param)
       i += instruction.length
     } else {
       throw new Error("Unknown operation: " + instruction.operation)
