@@ -13,6 +13,9 @@ type Instruction struct {
 	op     string
 	amount int
 }
+type Position struct {
+	y, x int
+}
 
 func ReadFile(filePath string) []Instruction {
 	file, err := os.Open(filePath)
@@ -37,52 +40,6 @@ func ReadFile(filePath string) []Instruction {
 		values = append(values, ins)
 	}
 	return values
-}
-
-func add(op string, amount int, ns int, ew int) (int, int) {
-	switch op {
-	case "N":
-		ns -= amount
-	case "S":
-		ns += amount
-	case "W":
-		ew -= amount
-	case "E":
-		ew += amount
-	}
-	return ns, ew
-}
-
-func Travel(Instructions []Instruction) (int, int) {
-	var NS, EW int
-	dirs := []string{"N", "E", "S", "W"}
-	curDir := 1
-	for _, v := range Instructions {
-		NS, EW = add(v.op, v.amount, NS, EW)
-		switch v.op {
-		case "F":
-			NS, EW = add(dirs[curDir], v.amount, NS, EW)
-		case "R":
-			a := v.amount / 90
-			curDir = (curDir + a) % len(dirs)
-		case "L":
-			a := v.amount / 90
-			c := curDir - a
-			if c < 0 {
-				c += len(dirs)
-			}
-			curDir = c % len(dirs)
-		}
-	}
-	return NS, EW
-}
-
-func abs(a int) int {
-	return int(math.Abs(float64(a)))
-}
-
-type Position struct {
-	y, x int
 }
 
 func Rotate(wp Position, amount int) Position {
@@ -114,6 +71,32 @@ func Sail(pos Position, wp Position, amount int) Position {
 	return Position{pos.y + y, pos.x + x}
 }
 
+func Travel(instructions []Instruction) Position {
+	var pos = Position{}
+	var wp = Position{0, 1}
+	for _, v := range instructions {
+		switch v.op {
+		case "N":
+			pos.y -= v.amount
+		case "E":
+			pos.x += v.amount
+		case "S":
+			pos.y += v.amount
+		case "W":
+			pos.x -= v.amount
+		case "F":
+			pos = Sail(pos, wp, v.amount)
+		case "L":
+			r := 4 - (v.amount / 90)
+			wp = Rotate(wp, r)
+		case "R":
+			wp = Rotate(wp, v.amount/90)
+		}
+	}
+
+	return pos
+}
+
 func WPTravel(instructions []Instruction) Position {
 	var pos = Position{}
 	var wp = Position{-1, 10}
@@ -141,11 +124,14 @@ func WPTravel(instructions []Instruction) Position {
 	return pos
 }
 
+func abs(a int) int {
+	return int(math.Abs(float64(a)))
+}
 func main() {
 	input := ReadFile("input.txt")
 	{
-		ns, ew := Travel(input)
-		n, e := abs(ns), abs(ew)
+		pos := Travel(input)
+		n, e := abs(pos.y), abs(pos.x)
 		fmt.Printf("=== Part A ===\n(%d,%d) :: %d\n", n, e, n+e)
 	}
 	{

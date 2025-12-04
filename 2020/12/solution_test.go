@@ -7,26 +7,26 @@ import (
 
 func TestTravel(t *testing.T) {
 	input := ReadFile("example.txt")
-	expectedNS, expectedEW := 8, 17
-	rNS, rEW := Travel(input)
+	expected := Position{8, 17}
+	result := Travel(input)
 
-	if expectedEW != rEW || expectedNS != rNS {
-		t.Errorf("Expected (%d,%d), got (%d,%d)", expectedNS, expectedEW, rNS, rEW)
+	if !reflect.DeepEqual(expected, result) {
+		t.Errorf("Expected %v, got %v", expected, result)
 	}
 }
 
 func TestOwnTravel(t *testing.T) {
 	input := []Instruction{
-		{"F", 10},  // EW == 10
-		{"R", 90},  // Dir == S
-		{"F", 1},   // NS == 1
-		{"L", 270}, // Dir == W
-		{"F", 3},   // EW == 7
+		{"F", 10},  // pos{0,10} wp{0,1}
+		{"R", 90},  // pos{0,10} wp{1,0}
+		{"F", 1},   // pos{1,10} wp{1,0}
+		{"L", 270}, // pos{1,10} wp{0,-1}
+		{"F", 3},   // pos{1,7} wp{0,-1}
 	}
-	eNS, eEW := 1, 7
-	rNS, rEW := Travel(input)
-	if eEW != rEW || eNS != rNS {
-		t.Errorf("Expected (%d,%d), got (%d,%d)", eNS, eEW, rNS, rEW)
+	expected := Position{1, 7}
+	result := Travel(input)
+	if !reflect.DeepEqual(expected, result) {
+		t.Errorf("Expected %v, got %v", expected, result)
 	}
 }
 
