@@ -149,18 +149,31 @@ impl Garden {
                 .filter(|distance| **distance % 2 == 0)
                 .count();
         }
-        let full_walk = self.possible_tiles(y_tiles_to_edge * 2);
+        let full_walk = self.possible_tiles(self.size.0 as u32);
         let even = full_walk.values()
             .filter(|distance| **distance % 2 == 0)
             .count();
+        let even_corners = full_walk.values()
+            .filter(|v| **v >= y_tiles_to_edge)
+            .filter(|v| **v % 2 == 0)
+            .count();
+
         let odd = full_walk.values()
             .filter(|distance| **distance % 2 == 1)
             .count();
-        println!("len:  {:?}", full_walk.len());
-        println!("even: {:?}", even);
-        println!("odd:  {:?}", odd);
-        // self.possible_tiles()
-        0
+        let odd_corners = full_walk.values()
+            .filter(|v| **v >= y_tiles_to_edge)
+            .filter(|v| **v % 2 == 1)
+            .count();
+
+        let tg = ((steps - self.start.1 as u32) / self.size.1 as u32) as usize;
+        let tg_odd = (tg + 1) * (tg + 1);
+        let tg_even = tg * tg;
+
+        tg_odd * odd
+            + tg_even * even
+            + tg * even_corners
+            - ((tg + 1) * odd_corners)
     }
 
     fn _print(&self, positions: &HashSet<Pos>) {
@@ -201,7 +214,7 @@ mod tests {
     #[test]
     fn real_b() {
         let input = "src/day21/input.txt";
-        assert_eq!(0, part_b(input));
+        assert_eq!(621289922886149, part_b(input));
     }
 
     #[test]
