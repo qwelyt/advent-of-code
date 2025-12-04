@@ -1,0 +1,85 @@
+const solver = require("./solution.js");
+//const file = require("./read-input.js");
+const file = "284639-748759";
+
+describe('Verify examples', () => {
+	it('1', () => {
+		const input = 111111;
+		const result = solver.verify(input);
+		expect(result).toBe(true);
+	})
+	it('2', () => {
+		const input = 112350;
+		const result = solver.verify(input);
+		expect(result).toBe(false);
+	})
+	it('3', () => {
+		const input = 123789;
+		const result = solver.verify(input);
+		expect(result).toBe(false);
+	})
+})
+
+describe('Test repetition', () =>{
+	const f = solver.hasRepetition;
+
+	it('112345 has repetition', () =>{
+		const input = 112345;
+		const expected = true;
+		const result = f(input);
+		expect(result).toBe(expected);
+	})
+	it('123789 has no repetition', () =>{
+		const input = 123789;
+		const expected = false;
+		const result = f(input);
+		expect(result).toBe(expected);
+	})
+})
+describe('Test sequenc', () =>{
+	const f = solver.decresingSequence;
+
+	it('112345 is increasing sequence', () =>{
+		const input = 112345;
+		const expected = false;
+		const result = f(input);
+		expect(result).toBe(expected);
+	})
+	it('112350 has decreasing sequence', () =>{
+		const input = 112350;
+		const expected = true;
+		const result = f(input);
+		expect(result).toBe(expected);
+	})
+})
+describe('Test verify', () =>{
+	const f = solver.verify;
+
+	it('112345 is correct', () =>{
+		const input = 112345;
+		const expected = true;
+		const result = f(input);
+		expect(result).toBe(expected);
+	})
+	it('112350 is incorrect', () =>{
+		const input = 112350;
+		const expected = false;
+		const result = f(input);
+		expect(result).toBe(expected);
+	})
+})
+
+it('Test basic range', () => {
+	const input = "100000-111111";
+	const result = solver.solve(input);
+	const expected = [111111];
+	expect(result).toStrictEqual(expected);
+})
+
+it('Solve A', () => {
+	const input = file;
+	const result = solver.solve(input);
+	console.log("Result:", result);
+	console.log("Answer:",result.length);
+	expect(result.length).toBe(895);
+})
