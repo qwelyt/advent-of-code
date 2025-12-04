@@ -86,10 +86,10 @@ fn map_wires(input: &str) -> HashMap<String, i32> {
     }
 
 
-    let three_sub: String = subtract_segments(mapping_inverse.get(&8).unwrap(), mapping_inverse.get(&4).unwrap());
+    let two_sub: String = subtract_segments(mapping_inverse.get(&8).unwrap(), mapping_inverse.get(&4).unwrap());
     let five_sub: String = subtract_segments(mapping_inverse.get(&4).unwrap(), mapping_inverse.get(&1).unwrap());
 
-    mapping.insert(find_wire(&wires, three_sub.as_str(), 2), 2);
+    mapping.insert(find_wire(&wires, two_sub.as_str(), 2), 2);
     let five: String = find_wire(&wires, five_sub.as_str(), 3);
 
     let segments_for_9 = add_segments(mapping_inverse.get(&1).unwrap(), &five.as_str());
