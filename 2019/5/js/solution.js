@@ -5,8 +5,8 @@ const inverter = s => s === "0" ? "1" : "0"
 
 const add = (a,b) => a+b
 const multiply = (a,b) => a*b
-const jumpIfTrue = a => a > 0
-const jumpIfFalse = a => a < 1
+const jumpIfTrue = a => a != 0
+const jumpIfFalse = a => a == 0
 const lessThan = (a,b) => a<b ? 1 : 0
 const equalTo = (a,b) => a === b ? 1 : 0
 
@@ -45,44 +45,44 @@ function parseInstruction(instruction){
 	
 	switch(opCode){
 		case "01":
-			ret["operation"] = add
-			ret["length"] = 4
-			ret["modifies"] = true
+			ret.operation = add
+			ret.length = 4
+			ret.modifies = true
 			break
 		case "02":
-			ret["operation"] = multiply
-			ret["modifies"] = true
-			ret["length"] = 4
+			ret.operation = multiply
+			ret.modifies = true
+			ret.length = 4
 			break
 		case "03":
-			ret["operation"] = write
-			ret["modifies"] = true
-			ret["length"] = 2
+			ret.operation = write
+			ret.modifies = true
+			ret.length = 2
 			break
 		case "04":
-			ret["operation"] = read
-			ret["modifies"] = false
-			ret["length"] = 2
+			ret.operation = read
+			ret.modifies = false
+			ret.length = 2
 			break
 		case "05":
-			ret["operation"] = jumpIfTrue
-			ret["modifies"] = false
-			ret["length"] = 2
+			ret.operation = jumpIfTrue
+			ret.modifies = false
+			ret.length = 3
 			break
 		case "06":
-			ret["operation"] = jumpIfFalse
-			ret["modifies"] = false
-			ret["length"] = 2
+			ret.operation = jumpIfFalse
+			ret.modifies = false
+			ret.length = 3
 			break
 		case "07":
-			ret["operation"] = lessThen
-			ret["modifies"] = true
-			ret["length"] = 4
+			ret.operation = lessThan
+			ret.modifies = true
+			ret.length = 4
 			break
 		case "08":
-			ret["operation"] = equalTo
-			ret["modifies"] = true
-			ret["length"] = 4
+			ret.operation = equalTo
+			ret.modifies = true
+			ret.length = 4
 			break
 		default:
 			throw new Error("Unknown opcode: "+opCode+" :  "+instruction)
@@ -100,19 +100,27 @@ function run(codes){
 		const instruction = parseInstruction(arr[i])
 
 		if(instruction.length === 4){
+			// Addition (01), Multiply (02), equalTo (07), lessThan (08)
 			const param1 = instruction.param1(arr, i, 1)
 			const param2 = instruction.param2(arr, i, 2)
 			const storePosition = instruction.storePosition(arr, i, 3)
 
-			arr[storePosition] = instruction.operation(param1,param2)
+			if(storePosition !== undefined) arr[storePosition] = instruction.operation(param1,param2)
 			i += instruction.length
+		}  else if(instruction.length === 3){
+			// jumpIfTrue (05), jumpIfFalse(06)
+			const param1 = instruction.param1(arr, i, 1)
+			const param2 = instruction.param2(arr, i, 2)
+			const result = instruction.operation(param1)
+			if(result) i = param2
+			else i+= instruction.length
+			
 		} else if(instruction.length === 2){
+			// write (03), read (04)
 			const storePosition = instruction.storePosition(arr, i, 1)
 			const result =  instruction.operation(arr, storePosition)
 			if(instruction.modifies) arr[storePosition] = result
-
-			if(instruction.jumps && result) i = storePosition
-			else i += instruction.length
+			i += instruction.length
 		} else {
 			throw new Error("Unknown instruction: "+JSON.stringify(instruction))
 		}
@@ -125,11 +133,13 @@ function run(codes){
 
 function solveA(codes){
 	valueToWrite = 1
+	output = []
 	return run(codes)
 }
 
 function solveB(codes, input){
 	valueToWrite = input
+	output = []
 	return run(codes)
 }
 
