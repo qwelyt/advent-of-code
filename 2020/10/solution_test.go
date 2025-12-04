@@ -48,3 +48,18 @@ func TestDistinctArrangements(t *testing.T) {
 		t.Errorf("Expected: %d, Got: %d", expected, result)
 	}
 }
+
+func TestDP(t *testing.T) {
+	input := ReadFile("example2.txt")
+	expected := 19208
+	fixed := []int{0}
+	fixed = append(fixed, input...)
+	fixed = append(fixed, fixed[len(fixed)-1]+3)
+
+	result, _ := DP(0, fixed, make(map[int]int))
+
+	if expected != result {
+		t.Errorf("Expected: %d, Got: %d", expected, result)
+	}
+
+}

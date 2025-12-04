@@ -67,13 +67,33 @@ func DA(in []int) int {
 	stepCounter[0] = 1
 
 	for i := 0; i < len(numbers); i++ {
-		for j := i + 1; j < len(numbers) && numbers[j] <= numbers[i]+3; j++ {
-			fmt.Printf("i %d, j, %d ::: %d ::: %d + %d = %d\n", i, j, numbers[j], stepCounter[i], stepCounter[j], stepCounter[j]+stepCounter[i])
+		for j := i + 1; j < len(numbers); j++ {
+			if numbers[j] > numbers[i]+3 {
+				break
+			}
+			// fmt.Printf("i %d, j, %d ::: numbers[j] = %d ::: %d + %d = %d\n", i, j, numbers[j], stepCounter[i], stepCounter[j], stepCounter[j]+stepCounter[i])
 			stepCounter[j] = stepCounter[j] + stepCounter[i]
 		}
 	}
-	fmt.Println(stepCounter)
+	// fmt.Println(stepCounter)
 	return stepCounter[len(numbers)-1]
+}
+
+func DP(i int, in []int, memo map[int]int) (int, map[int]int) {
+	if i == len(in)-1 {
+		return 1, memo
+	}
+	if memo[i] != 0 { // Check if we have already calculated this value so we don't need
+		return memo[i], memo // to make all the steps again
+	}
+	ans := 0
+	for j := i + 1; j < len(in) && in[j]-in[i] <= 3; j++ {
+		a, m := DP(j, in, memo)
+		memo = m
+		ans += a
+	}
+	memo[i] = ans
+	return ans, memo
 }
 
 func main() {
@@ -82,4 +102,10 @@ func main() {
 	fmt.Printf("=== Part A ===\nOnes: %d, Threes: %d, Multiplied: %d\n", one, three, one*three)
 	val := DA(input)
 	fmt.Printf("=== Part B ===\nPaths: %d\n", val)
+
+	fixed := []int{0}
+	fixed = append(fixed, input...)
+	fixed = append(fixed, fixed[len(fixed)-1]+3)
+	partB, _ := DP(0, fixed, make(map[int]int))
+	fmt.Printf("\n=== Part B, understandable === \n Paths: %d\n", partB)
 }
