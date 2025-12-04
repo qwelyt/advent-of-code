@@ -5,20 +5,28 @@ use std::io::{BufRead, BufReader};
 pub fn solve() {
     println!("== Day 2 ==");
     let input = "src/day2/input.txt";
-    time(part_a, input, "A");
+    //time(_part_a, input, "A");
+    time(part_a2, input, "A");
     time(part_b, input, "B");
 }
 
-fn part_a(input: &str) -> usize {
+fn _part_a(input: &str) -> usize {
     let ranges = ranges(input);
     let invalids = ranges
         .iter()
         .map(|range| invalid_in_range(range))
         .collect::<Vec<Vec<usize>>>();
 
-    invalids.iter()
-        .flatten()
-        .sum()
+    invalids.iter().flatten().sum()
+}
+fn part_a2(input: &str) -> usize {
+    let ranges = ranges(input);
+    let invalids = ranges
+        .iter()
+        .map(|range| invalid_in_range2(range))
+        .collect::<Vec<Vec<usize>>>();
+
+    invalids.iter().flatten().sum()
 }
 
 fn ranges(input: &str) -> Vec<String> {
@@ -71,6 +79,27 @@ fn invalid_in_range(range: &str) -> Vec<usize> {
 
     vals
 }
+fn invalid_in_range2(range: &str) -> Vec<usize> {
+    let (start_s, end_s) = range.split_once("-").unwrap();
+    let start = start_s.parse::<usize>().unwrap();
+    let end = end_s.parse::<usize>().unwrap();
+    let mut vals = Vec::new();
+    // Time to beat:
+    //    43898358387ns
+    for current in start..=end {
+        let current_s = current.to_string();
+        if current_s.len() % 2 != 0 {
+            continue;
+        }
+        let sub = &current_s[0..current_s.len() / 2];
+        let full_s = sub.repeat(2);
+        let full = full_s.parse::<usize>().unwrap();
+        if full == current && full >= start && full <= end {
+            vals.push(full);
+        }
+    }
+    vals
+}
 
 fn part_b(input: &str) -> usize {
     let ranges = ranges(input);
@@ -79,9 +108,7 @@ fn part_b(input: &str) -> usize {
         .map(|range| invalid_in_range_multiple(range))
         .collect::<Vec<Vec<usize>>>();
 
-    invalids.iter()
-        .flatten()
-        .sum()
+    invalids.iter().flatten().sum()
 }
 
 fn invalid_in_range_multiple(range: &str) -> Vec<usize> {
@@ -130,7 +157,13 @@ mod tests {
     #[test]
     fn real_a() {
         let input = "src/day2/input.txt";
-        assert_eq!(16793817782, part_a(input));
+        assert_eq!(16793817782, _part_a(input));
+    }
+    #[ignore]
+    #[test]
+    fn real_a2() {
+        let input = "src/day2/input.txt";
+        assert_eq!(16793817782, part_a2(input));
     }
 
     #[ignore]
@@ -143,7 +176,13 @@ mod tests {
     #[test]
     fn part_a_test_input() {
         let input = "src/day2/test-input.txt";
-        let result = part_a(input);
+        let result = _part_a(input);
+        assert_eq!(1227775554, result);
+    }
+    #[test]
+    fn part_a2_test_input() {
+        let input = "src/day2/test-input.txt";
+        let result = part_a2(input);
         assert_eq!(1227775554, result);
     }
 
@@ -174,6 +213,28 @@ mod tests {
 
         let input = "100-999";
         let result = invalid_in_range(input);
+        assert_eq!(Vec::<usize>::new(), result);
+    }
+    #[test]
+    fn invalid_in_range2_test() {
+        let input = "98-115";
+        let result = invalid_in_range2(input);
+        assert_eq!(vec![99], result);
+
+        let input = "11-22";
+        let result = invalid_in_range2(input);
+        assert_eq!(vec![11, 22], result);
+
+        let input = "1188511880-1188511890";
+        let result = invalid_in_range2(input);
+        assert_eq!(vec![1188511885], result);
+
+        let input = "100-999";
+        let result = invalid_in_range2(input);
+        assert_eq!(Vec::<usize>::new(), result);
+
+        let input = "100-999";
+        let result = invalid_in_range2(input);
         assert_eq!(Vec::<usize>::new(), result);
     }
 
